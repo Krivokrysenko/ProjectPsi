@@ -4,11 +4,11 @@ from agents import AlArm
 # fun stuff to make agents go brrrrrrrrr
 
 # i was gonna put like, data structures here or something
-alarm = AlArm.alarm()
 
 # Nona's jazz
 
-def summonAgent():
-    return None
+def summonAgent(userstring):
+    if "alarm" in userstring:
+        AlArm.alarm()
 
-alarm
+summonAgent(input())
