@@ -8,7 +8,8 @@ from agents import AlArm
 # Nona's jazz
 
 def summonAgent(userstring):
-    if "alarm" in userstring:
-        AlArm.alarm()
+    tokens = userstring.split(" ")
+    if "alarm" in tokens:
+        AlArm.alarm(tokens)
 
 summonAgent(input())
