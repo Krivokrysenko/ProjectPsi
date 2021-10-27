@@ -1,7 +1,6 @@
 import agents.agent
 
-
-# i should put stuff here to make things go brrrrrrrr
+keywords = ["alarm"]
 
 class AlArm(agents.agent.Agent):
 
