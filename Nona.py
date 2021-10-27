@@ -1,5 +1,5 @@
 # should probably make an init and all and stuff but just manual import for now
-from agents import AlArm
+from agents.AlArm import AlArm
 
 keywords = None
 
@@ -9,7 +9,9 @@ def acceptInput():
 def summonAgent(userstring):
     tokens = userstring.split(" ")
     if "alarm" in tokens:
-        AlArm.alarm(tokens)
+        alarm = AlArm()
+        alarm.alarm(tokens)
+        alarm.test()
 
 def requestFromUser():
     return None
