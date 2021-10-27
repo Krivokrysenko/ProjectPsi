@@ -1,22 +1,23 @@
-# should probably make an init and all and stuff but just manual import for now
 from agents.AlArm import AlArm
 
-agentKeywords = None
+agentKeywords = []
 
-def acceptInput():
-    return None
-
-def summonAgent(userstring):
+def acceptInput(userstring):
     tokens = userstring.split(" ")
+    summonAgent(tokens)
+
+def summonAgent(tokens):
     if "alarm" in tokens:
         alarm = AlArm()
-        alarm.alarm(tokens)
+        alarm.interpret(tokens)
 
-def requestFromUser():
-    return None
+def requestFromUser(request):
+    outputToUser(request)
+    answer = input()
+    # send back to agent?
 
-def outputToUser():
-    return None
+def outputToUser(output):
+    print(output)
 
 def loadAgent():
     return None
@@ -24,4 +25,4 @@ def loadAgent():
 def unloadAgent():
     return None
 
-summonAgent(input())
+acceptInput(input())

@@ -4,7 +4,9 @@ keywords = ["alarm"]
 
 class AlArm(agents.agent.Agent):
 
-    # then the functions like
+    def interpret(self, tokens):
+        self.alarm(tokens)
+
     def alarm(self, tokens):
         time = 0
         unit = ""

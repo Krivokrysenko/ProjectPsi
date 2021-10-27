@@ -1,10 +1,15 @@
+# yeah so this is a fun new issue
+import Nona
+
 class Agent:
 
-    def interpret(self):
+    def interpret(self, tokens):
         return None
 
     def requestMoreInfo(self):
-        return None
+        request = ""
+        Nona.requestFromUser(request)
 
     def outputToNona(self):
-        return None
+        output = ""
+        Nona.outputToUser(output)
