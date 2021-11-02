@@ -9,7 +9,8 @@ def acceptInput(userstring):
 def summonAgent(tokens):
     if "alarm" in tokens:
         alarm = AlArm()
-        alarm.interpret(tokens)
+        signal = alarm.interpret(tokens)
+        # some sort of control flow to call requestFromUser versus outputToUser based on the signal
 
 def requestFromUser(request):
     outputToUser(request)

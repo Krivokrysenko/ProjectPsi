@@ -1,6 +1,3 @@
-# yeah so this is a fun new issue
-import Nona
-
 class Agent:
 
     def interpret(self, tokens):
@@ -8,8 +5,8 @@ class Agent:
 
     def requestMoreInfo(self):
         request = ""
-        Nona.requestFromUser(request)
+        return request
 
     def outputToNona(self):
         output = ""
-        Nona.outputToUser(output)
+        return output
