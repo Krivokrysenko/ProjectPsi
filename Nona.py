@@ -51,14 +51,15 @@ def loadAgent(agentName, filename):
         config.write(configfile)
     loadedmods[agentName] = import_module(filename, "agents")
 
-def unloadAgent(agentName, filename):
+def unloadAgent(agentName):
     config = configparser.ConfigParser()
     config.read('config.ini')
-    config["agents"][agentName] = filename
+    config.remove_option("agents", agentName)
     with open('config.ini', 'w') as configfile:
         config.write(configfile)
 
 # """testing"""
 
-# loadAgent("alarm", ".AlArm")
+loadAgent("alarm", ".AlArm")
 acceptInput(input())
+unloadAgent("alarm")
