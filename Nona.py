@@ -22,7 +22,7 @@ agentKeywords = []
 
 def acceptInput(userstring):
     tokens = userstring.split(" ")
-    summonAgent(tokens)
+    return summonAgent(tokens)
 
 def summonAgent(tokens):
     if "alarm" in tokens:
@@ -31,17 +31,19 @@ def summonAgent(tokens):
         code, output = alarm.interpret(tokens)
         match code:
             case Code.INFO:
-                requestFromUser(output)
+                return requestFromUser(output)
             case Code.OUT:
-                outputToUser(output)
+                return outputToUser(output)
 
 def requestFromUser(request):
     outputToUser(request)
     answer = input()
     # send back to agent?
+    return request
 
 def outputToUser(output):
     print(output)
+    return output
 
 def loadAgent(agentName, filename):
     config = configparser.ConfigParser()
@@ -50,6 +52,7 @@ def loadAgent(agentName, filename):
     with open('config.ini', 'w') as configfile:
         config.write(configfile)
     loadedmods[agentName] = import_module(filename, "agents")
+    return "successfully loaded"
 
 def unloadAgent(agentName):
     config = configparser.ConfigParser()
@@ -57,9 +60,4 @@ def unloadAgent(agentName):
     config.remove_option("agents", agentName)
     with open('config.ini', 'w') as configfile:
         config.write(configfile)
-
-# """testing"""
-
-loadAgent("alarm", ".AlArm")
-acceptInput(input())
-unloadAgent("alarm")
+    return "successfully unloaded"
