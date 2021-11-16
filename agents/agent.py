@@ -6,6 +6,9 @@ class Code(Enum):
 
 class Agent:
 
+    def keywords(self):
+        return None
+
     def interpret(self, tokens):
         return None
 

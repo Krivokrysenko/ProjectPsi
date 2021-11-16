@@ -4,6 +4,9 @@ keywords = ["alarm"]
 
 class AlArm(agents.agent.Agent):
 
+    def keywords(self):
+        return ["alarm"]
+
     def interpret(self, tokens):
         return self.alarm(tokens)
 
