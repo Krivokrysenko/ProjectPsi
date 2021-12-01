@@ -5,10 +5,15 @@ class test(unittest.TestCase):
 
     def test_basic(self):
         Nona.loadAgent("alarm", ".AlArm")
+        Nona.loadAgent("timer", ".Timer")
         actual = Nona.acceptInput("alarm 7 min")
         expected = "time: 7\n unit: min"
         self.assertEqual(actual, expected)
+        actual = Nona.acceptInput("timer 7 min")
+        expected = "time: 7\n unit: min"
+        self.assertEqual(actual, expected)
         Nona.unloadAgent("alarm")
+        Nona.unloadAgent("timer")
 
     def test_keywords(self):
         Nona.loadAgent("alarm", ".AlArm")
@@ -28,3 +33,8 @@ class test(unittest.TestCase):
         expected = previous + ["al arm"]
         self.assertEqual(actual, expected)
         Nona.unloadAgent("alarm")
+
+    def test_addKeyword2(self):
+        Nona.loadAgent("timer", ".Timer")
+        Nona.addKeyword("timer", "set a timer")
+        Nona.unloadAgent("timer")

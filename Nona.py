@@ -15,7 +15,10 @@ config.read('config.ini')
 for agent in config["agents"]:
     loadedmods[agent] = import_module(config["agents"][agent], "agents")
     instclasses[agent] = getattr(loadedmods[agent], config["agents"][agent][1:len(config["agents"][agent])])()
-    agentKeywords[agent] = instclasses[agent].keywords() + json.loads(config["keywords"][agent])
+    if agent in config["keywords"]:
+        agentKeywords[agent] = instclasses[agent].keywords() + json.loads(config["keywords"][agent])
+    else:
+        agentKeywords[agent] = instclasses[agent].keywords()
 
 # Nona go brrrrrrrr
 
@@ -52,7 +55,10 @@ def addKeyword(agentName, keyword):
     agentKeywords[agentName] = agentKeywords[agentName] + [keyword]
     config = configparser.ConfigParser()
     config.read('config.ini')
-    config["keywords"][agentName] = json.dumps(json.loads(config["keywords"][agentName]) + [keyword])
+    if agentName in config["keywords"]:
+        config["keywords"][agentName] = json.dumps(json.loads(config["keywords"][agentName]) + [keyword])
+    else:
+        config["keywords"][agentName] = json.dumps([keyword])
     with open('config.ini', 'w') as configfile:
         config.write(configfile)
 
