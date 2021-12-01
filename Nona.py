@@ -48,6 +48,14 @@ def outputToUser(output):
     print(output)
     return output
 
+def addKeyword(agentName, keyword):
+    agentKeywords[agentName] = agentKeywords[agentName] + [keyword]
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    config["keywords"][agentName] = json.dumps(json.loads(config["keywords"][agentName]) + [keyword])
+    with open('config.ini', 'w') as configfile:
+        config.write(configfile)
+
 def loadAgent(agentName, filename):
     config = configparser.ConfigParser()
     config.read('config.ini')
