@@ -15,7 +15,7 @@ config.read('config.ini')
 for agent in config["agents"]:
     loadedmods[agent] = import_module(config["agents"][agent], "agents")
     instclasses[agent] = getattr(loadedmods[agent], config["agents"][agent][1:len(config["agents"][agent])])()
-agentKeywords = json.loads(config["keywords"]["keywords"])
+    agentKeywords[agent] = instclasses[agent].keywords() + json.loads(config["keywords"][agent])
 
 # Nona go brrrrrrrr
 
@@ -54,22 +54,19 @@ def loadAgent(agentName, filename):
     config["agents"][agentName] = filename
     loadedmods[agentName] = import_module(filename, "agents")
     obj = getattr(loadedmods[agentName], filename[1:len(filename)])()
-    configkeywords = json.loads(config["keywords"]["keywords"])
-    configkeywords[agentName] = obj.keywords()
-    config["keywords"]["keywords"] = json.dumps(configkeywords)
+    tempKeywords = obj.keywords()
+    if agentName in config["keywords"]:
+        tempKeywords = tempKeywords + json.loads(config["keywords"][agentName])
     with open('config.ini', 'w') as configfile:
         config.write(configfile)
     instclasses[agentName] = obj
-    agentKeywords[agentName] = obj.keywords()
+    agentKeywords[agentName] = tempKeywords
     return "successfully loaded"
 
 def unloadAgent(agentName):
     config = configparser.ConfigParser()
     config.read('config.ini')
     config.remove_option("agents", agentName)
-    configkeywords = json.loads(config["keywords"]["keywords"])
-    configkeywords.pop(agentName)
-    config["keywords"]["keywords"] = json.dumps(configkeywords)
     with open('config.ini', 'w') as configfile:
         config.write(configfile)
     loadedmods.pop(agentName)

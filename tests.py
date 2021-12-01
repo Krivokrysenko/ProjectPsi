@@ -13,7 +13,7 @@ class test(unittest.TestCase):
     def test_keywords(self):
         Nona.loadAgent("alarm", ".AlArm")
         actual = Nona.agentKeywords
-        expected = {'alarm': ['alarm']}
+        expected = {'alarm': ["alarm", "set an alarm", "remind me at"]}
         self.assertEqual(actual, expected)
         Nona.unloadAgent("alarm")
         self.assertEqual(Nona.loadedmods, {})
