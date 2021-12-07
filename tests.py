@@ -9,8 +9,8 @@ class test(unittest.TestCase):
         actual = Nona.acceptInput("alarm 7 min")
         expected = "time: 7\n unit: min"
         self.assertEqual(actual, expected)
-        actual = Nona.acceptInput("timer 7 min")
-        expected = "time: 7\n unit: min"
+        actual = Nona.acceptInput("timer 3")
+        expected = "beep beep beep"
         self.assertEqual(actual, expected)
         Nona.unloadAgent("alarm")
         Nona.unloadAgent("timer")

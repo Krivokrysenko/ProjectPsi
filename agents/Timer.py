@@ -1,6 +1,10 @@
 import agents.agent
+from concurrent.futures import *
+import time
 
 keywords = ["timer"]
+
+executor = ThreadPoolExecutor()
 
 class Timer(agents.agent.Agent):
 
@@ -8,14 +12,12 @@ class Timer(agents.agent.Agent):
         return ["timer"]
 
     def interpret(self, tokens):
-        return self.timer(tokens)
+        return executor.submit(self.timer, tokens).result()
 
     def timer(self, tokens):
-        time = 0
-        unit = ""
+        amount = 0
         for token in tokens:
             if token.isdigit():
-                time = token
-                # this is an index out of bounds error in the making
-                unit = tokens[tokens.index(token) + 1]
-        return self.outputToNona("time: " + str(time) + "\n unit: " + unit)
+                amount = int(token)
+        time.sleep(amount)
+        return self.outputToNona("beep beep beep")
