@@ -15,9 +15,13 @@ class Timer(agents.agent.Agent):
         return executor.submit(self.timer, tokens).result()
 
     def timer(self, tokens):
-        amount = 0
+        amount = None
         for token in tokens:
             if token.isdigit():
                 amount = int(token)
-        time.sleep(amount)
-        return self.outputToNona("beep beep beep")
+        if amount is None:
+            return self.requestMoreInfo("How long do you want to set a timer for?")
+        else:
+            print("timer set for " + str(amount) + " seconds")
+            time.sleep(amount)
+            return self.outputToNona("beep beep beep")

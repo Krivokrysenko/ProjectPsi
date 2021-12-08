@@ -22,7 +22,10 @@ for agent in config["agents"]:
 
 # Nona go brrrrrrrr
 
-currentAgent = None
+shorttermmemory = {
+    "cancelKeywords": json.loads(config["keywords"]["nonacancel"]),
+    "currentAgent": None
+}
 
 def acceptInput(userstring):
     tokens = userstring.split(" ")
@@ -33,8 +36,8 @@ def summonAgent(tokens):
         for agent in agentKeywords:
             keywords = agentKeywords[agent]
             if token in keywords:
-                currentAgent = instclasses[agent]
-                code, output = currentAgent.interpret(tokens)
+                shorttermmemory["currentAgent"] = instclasses[agent]
+                code, output = shorttermmemory["currentAgent"].interpret(tokens)
                 match code:
                     case Code.INFO:
                         return requestFromUser(output)
@@ -44,8 +47,16 @@ def summonAgent(tokens):
 def requestFromUser(request):
     outputToUser(request)
     answer = input()
-    # send back to agent?
-    return request
+    tokens = answer.split(" ")
+    if any(word in tokens for word in shorttermmemory["cancelKeywords"]):
+        return outputToUser("Okay!")
+    else:
+        code, output = shorttermmemory["currentAgent"].interpret(tokens)
+        match code:
+            case Code.INFO:
+                return requestFromUser(output)
+            case Code.OUT:
+                return outputToUser(output)
 
 def outputToUser(output):
     print(output)

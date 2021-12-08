@@ -38,3 +38,8 @@ class test(unittest.TestCase):
         Nona.loadAgent("timer", ".Timer")
         Nona.addKeyword("timer", "set a timer")
         Nona.unloadAgent("timer")
+
+    def test_requestFromUser(self):
+        Nona.loadAgent("timer", ".Timer")
+        Nona.acceptInput("timer")
+        Nona.unloadAgent("timer")
