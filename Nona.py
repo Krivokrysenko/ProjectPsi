@@ -2,8 +2,15 @@
 import configparser
 from importlib import import_module
 import json
+from thespian.actors import *
+
 # import enum codes
 from agents.agent import Code
+
+# actor(s)/class(es) here
+class NonaActor(Actor):
+    def receiveMessage(self, msg, sender):
+        print(msg)
 
 # code to dynamically import agents, might need to clean this up/move it
 loadedmods = {}
@@ -27,6 +34,9 @@ shorttermmemory = {
     "currentAgent": None
 }
 
+actsys = ActorSystem("multiprocTCPBase")
+Nonaactor = actsys.createActor(NonaActor)
+
 def acceptInput(userstring):
     tokens = userstring.split(" ")
     return summonAgent(tokens)
@@ -37,6 +47,7 @@ def summonAgent(tokens):
             keywords = agentKeywords[agent]
             if token in keywords:
                 shorttermmemory["currentAgent"] = instclasses[agent]
+                # this is when the nona actor asks the agent actor
                 code, output = shorttermmemory["currentAgent"].interpret(tokens)
                 match code:
                     case Code.INFO:

@@ -1,5 +1,6 @@
 import unittest
 import Nona
+import time
 
 class test(unittest.TestCase):
 
@@ -41,5 +42,7 @@ class test(unittest.TestCase):
 
     def test_requestFromUser(self):
         Nona.loadAgent("timer", ".Timer")
-        Nona.acceptInput("timer")
+        Nona.acceptInput("timer 4")
+        Nona.acceptInput("timer 2")
+        time.sleep(7)
         Nona.unloadAgent("timer")

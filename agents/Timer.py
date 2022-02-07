@@ -1,10 +1,8 @@
 import agents.agent
-from concurrent.futures import *
 import time
+from thespian.actors import *
 
 keywords = ["timer"]
-
-executor = ThreadPoolExecutor()
 
 class Timer(agents.agent.Agent):
 
@@ -12,7 +10,7 @@ class Timer(agents.agent.Agent):
         return ["timer"]
 
     def interpret(self, tokens):
-        return executor.submit(self.timer, tokens).result()
+        return self.timer(tokens)
 
     def timer(self, tokens):
         amount = None
@@ -22,6 +20,10 @@ class Timer(agents.agent.Agent):
         if amount is None:
             return self.requestMoreInfo("How long do you want to set a timer for?")
         else:
-            print("timer set for " + str(amount) + " seconds")
-            time.sleep(amount)
-            return self.outputToNona("beep beep beep")
+            timeractor = ActorSystem().createActor(TimerActor)
+            return self.outputToNona(ActorSystem().ask(timeractor, amount))
+
+class TimerActor(Actor):
+    def receiveMessage(self, msg, sender):
+        time.sleep(msg)
+        print("beep beep beep")
