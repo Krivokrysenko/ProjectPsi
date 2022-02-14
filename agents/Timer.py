@@ -20,10 +20,14 @@ class Timer(agents.agent.Agent):
         if amount is None:
             return self.requestMoreInfo("How long do you want to set a timer for?")
         else:
-            timeractor = ActorSystem().createActor(TimerActor)
-            return self.outputToNona(ActorSystem().ask(timeractor, amount))
+            time.sleep(amount)
+            return self.outputToNona("timer set for whatever the heck it was before")
 
-class TimerActor(Actor):
+class TimerActor(agents.agent.AgentActor):
+    def __init__(self):
+        super().__init__() # pycharm is happy with this here but i forgor what it does
+        self.TimerObj = Timer()
+
     def receiveMessage(self, msg, sender):
-        time.sleep(msg)
+        idkwhattodowiththis = self.TimerObj.interpret(msg)
         print("beep beep beep")

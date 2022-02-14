@@ -19,3 +19,6 @@ class AlArm(agents.agent.Agent):
                 # this is an index out of bounds error in the making
                 unit = tokens[tokens.index(token) + 1]
         return self.outputToNona("time: " + str(time) + "\n unit: " + unit)
+
+class AlArmAgent(agents.agent.AgentActor):
+    print("blah")
