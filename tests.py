@@ -20,20 +20,20 @@ class test(unittest.TestCase):
     def test_keywords(self):
         NonaObj = Nona.NonaClass()
         NonaObj.loadAgent("alarm", ".AlArm")
-        self.assertTrue(Nona.agentKeywords["alarm"][0] == "alarm")
-        self.assertTrue(Nona.agentKeywords["alarm"][1] == "set an alarm")
-        self.assertTrue(Nona.agentKeywords["alarm"][2] == "remind me at")
+        self.assertTrue(NonaObj.agentKeywords["alarm"][0] == "alarm")
+        self.assertTrue(NonaObj.agentKeywords["alarm"][1] == "set an alarm")
+        self.assertTrue(NonaObj.agentKeywords["alarm"][2] == "remind me at")
         NonaObj.unloadAgent("alarm")
-        self.assertEqual(Nona.loadedmods, {})
-        self.assertEqual(Nona.instclasses, {})
-        self.assertEqual(Nona.agentKeywords, {})
+        self.assertEqual(NonaObj.loadedmods, {})
+        self.assertEqual(NonaObj.instclasses, {})
+        self.assertEqual(NonaObj.agentKeywords, {})
 
     def test_addKeyword(self):
         NonaObj = Nona.NonaClass()
         NonaObj.loadAgent("alarm", ".AlArm")
-        previous = Nona.agentKeywords["alarm"]
+        previous = NonaObj.agentKeywords["alarm"]
         NonaObj.addKeyword("alarm", "al arm")
-        actual = Nona.agentKeywords["alarm"]
+        actual = NonaObj.agentKeywords["alarm"]
         expected = previous + ["al arm"]
         self.assertEqual(actual, expected)
         NonaObj.unloadAgent("alarm")

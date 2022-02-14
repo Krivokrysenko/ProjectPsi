@@ -21,7 +21,7 @@ class Timer(agents.agent.Agent):
             return self.requestMoreInfo("How long do you want to set a timer for?")
         else:
             time.sleep(amount)
-            return self.outputToNona("timer set for whatever the heck it was before")
+            return self.outputToNona("beep beep beep")
 
 class TimerActor(agents.agent.AgentActor):
     def __init__(self):
@@ -30,4 +30,4 @@ class TimerActor(agents.agent.AgentActor):
 
     def receiveMessage(self, msg, sender):
         idkwhattodowiththis = self.TimerObj.interpret(msg)
-        print("beep beep beep")
+        print("congrats ya did it")
