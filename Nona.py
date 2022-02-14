@@ -7,10 +7,6 @@ from thespian.actors import *
 # import enum codes
 from agents.agent import Code
 
-# witchcraft goes here
-# actsys = ActorSystem("multiprocTCPBase")
-# Nonaactor = actsys.createActor(NonaActor)
-
 # class here
 class NonaClass:
     def acceptInput(self, userstring):
@@ -96,24 +92,29 @@ class NonaActor(Actor):
     def receiveMessage(self, msg, sender):
         print(msg)
 
-# code to dynamically import agents, might need to clean this up/move it
-loadedmods = {}
-instclasses = {}
-agentKeywords = {}
+if __name__ == '__main__':
+    # witchcraft goes here
+    actsys = ActorSystem("multiprocTCPBase")
+    Nonaactor = actsys.createActor(NonaActor)
 
-config = configparser.ConfigParser()
-config.read('config.ini')
-for agent in config["agents"]:
-    loadedmods[agent] = import_module(config["agents"][agent], "agents")
-    instclasses[agent] = getattr(loadedmods[agent], config["agents"][agent][1:len(config["agents"][agent])])()
-    if agent in config["keywords"]:
-        agentKeywords[agent] = instclasses[agent].keywords() + json.loads(config["keywords"][agent])
-    else:
-        agentKeywords[agent] = instclasses[agent].keywords()
+    # code to dynamically import agents, might need to clean this up/move it
+    loadedmods = {}
+    instclasses = {}
+    agentKeywords = {}
 
-# Nona go brrrrrrrr
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    for agent in config["agents"]:
+        loadedmods[agent] = import_module(config["agents"][agent], "agents")
+        instclasses[agent] = getattr(loadedmods[agent], config["agents"][agent][1:len(config["agents"][agent])])()
+        if agent in config["keywords"]:
+            agentKeywords[agent] = instclasses[agent].keywords() + json.loads(config["keywords"][agent])
+        else:
+            agentKeywords[agent] = instclasses[agent].keywords()
 
-shorttermmemory = {
-    "cancelKeywords": json.loads(config["keywords"]["nonacancel"]),
-    "currentAgent": None
-}
+    # Nona go brrrrrrrr
+
+    shorttermmemory = {
+        "cancelKeywords": json.loads(config["keywords"]["nonacancel"]),
+        "currentAgent": None
+    }

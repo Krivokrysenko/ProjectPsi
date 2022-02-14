@@ -4,6 +4,9 @@ keywords = ["alarm"]
 
 class AlArm(agents.agent.Agent):
 
+    # def __init__(self):
+    #     self.keywords = ["alarm"]
+
     def keywords(self):
         return ["alarm"]
 
@@ -20,5 +23,11 @@ class AlArm(agents.agent.Agent):
                 unit = tokens[tokens.index(token) + 1]
         return self.outputToNona("time: " + str(time) + "\n unit: " + unit)
 
-class AlArmAgent(agents.agent.AgentActor):
-    print("blah")
+class AlArmActor(agents.agent.AgentActor):
+    def __init__(self):
+        super().__init__()
+        self.AlArmObj = AlArm()
+
+    def receiveMessage(self, msg, sender):
+        idkwhattodowiththis = self.AlArmObj.interpret(msg)
+        print("beep beep beep")
