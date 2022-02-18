@@ -15,6 +15,7 @@ class NonaClass:
         self.instclasses = {}
         self.agentKeywords = {}
 
+        # TODO make this create actor objects instead of class objects
         config = configparser.ConfigParser()
         config.read('config.ini')
         for agent in config["agents"]:
@@ -115,6 +116,7 @@ class NonaActor(Actor):
     def receiveMessage(self, msg, sender):
         print(msg)
 
+# TODO actually figure out the actors communication
 if __name__ == '__main__':
     # witchcraft goes here
     actsys = ActorSystem("multiprocTCPBase")
