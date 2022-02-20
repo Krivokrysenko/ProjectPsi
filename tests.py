@@ -2,6 +2,7 @@ import unittest
 import Nona
 import time
 
+
 class test(unittest.TestCase):
 
     def test_basic(self):
@@ -20,20 +21,20 @@ class test(unittest.TestCase):
     def test_keywords(self):
         NonaObj = Nona.NonaClass()
         NonaObj.loadAgent("alarm", ".AlArm")
-        self.assertTrue(NonaObj.agentKeywords["alarm"][0] == "alarm")
-        self.assertTrue(NonaObj.agentKeywords["alarm"][1] == "set an alarm")
-        self.assertTrue(NonaObj.agentKeywords["alarm"][2] == "remind me at")
+        self.assertTrue(NonaObj.agentkeywords["alarm"][0] == "alarm")
+        self.assertTrue(NonaObj.agentkeywords["alarm"][1] == "set an alarm")
+        self.assertTrue(NonaObj.agentkeywords["alarm"][2] == "remind me at")
         NonaObj.unloadAgent("alarm")
-        self.assertEqual(NonaObj.loadedmods, {})
-        self.assertEqual(NonaObj.instclasses, {})
-        self.assertEqual(NonaObj.agentKeywords, {})
+        self.assertEqual(NonaObj.loadedmodules, {})
+        self.assertEqual(NonaObj.agentactors, {})
+        self.assertEqual(NonaObj.agentkeywords, {})
 
     def test_addKeyword(self):
         NonaObj = Nona.NonaClass()
         NonaObj.loadAgent("alarm", ".AlArm")
-        previous = NonaObj.agentKeywords["alarm"]
+        previous = NonaObj.agentkeywords["alarm"]
         NonaObj.addKeyword("alarm", "al arm")
-        actual = NonaObj.agentKeywords["alarm"]
+        actual = NonaObj.agentkeywords["alarm"]
         expected = previous + ["al arm"]
         self.assertEqual(actual, expected)
         NonaObj.unloadAgent("alarm")
@@ -50,4 +51,14 @@ class test(unittest.TestCase):
         NonaObj.acceptInput("timer 4")
         NonaObj.acceptInput("timer 2")
         time.sleep(7)
+        NonaObj.unloadAgent("timer")
+
+    def test_loadfortesting(self):
+        NonaObj = Nona.NonaClass()
+        NonaObj.loadAgent("alarm", ".AlArm")
+        NonaObj.loadAgent("timer", ".Timer")
+
+    def test_unloadfortesting(self):
+        NonaObj = Nona.NonaClass()
+        NonaObj.unloadAgent("alarm")
         NonaObj.unloadAgent("timer")

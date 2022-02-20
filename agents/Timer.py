@@ -4,10 +4,11 @@ from thespian.actors import *
 
 keywords = ["timer"]
 
+
 # TODO do not use sleep or time or whatever just send a delayed message to yourself or nona for the love of goosh
 class Timer(agents.agent.Agent):
     def __init__(self):
-        super().__init__() # pycharm is happy with this here but i forgor what it does
+        super().__init__()  # pycharm is happy with this here but i forgor what it does
 
     # non-actor stuff
 

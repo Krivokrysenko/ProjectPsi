@@ -1,10 +1,12 @@
 from enum import Enum, auto
 from thespian.actors import *
 
+
 # TODO get rid of these enums cause you can replace them with thespian ask/tell
 class Code(Enum):
     INFO = auto()
     OUT = auto()
+
 
 # TODO finish fleshing this out and change Timer/AlArm to extend this properly/use the API
 class Agent(Actor):

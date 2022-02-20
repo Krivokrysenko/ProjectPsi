@@ -2,6 +2,7 @@ import agents.agent
 
 keywords = ["alarm"]
 
+
 class AlArm(agents.agent.Agent):
     def __init__(self):
         super().__init__()

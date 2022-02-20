@@ -11,20 +11,20 @@ from agents.agent import Code
 class NonaClass:
     def __init__(self):
         # code to dynamically import agents, might need to clean this up/move it
-        self.loadedmods = {}
-        self.instclasses = {}
-        self.agentKeywords = {}
+        self.loadedmodules = {}
+        self.instantiatedclasses = {}
+        self.agentkeywords = {}
 
         # TODO make this create actor objects instead of class objects
         config = configparser.ConfigParser()
         config.read('config.ini')
         for agent in config["agents"]:
-            self.loadedmods[agent] = import_module(config["agents"][agent], "agents")
-            self.instclasses[agent] = getattr(self.loadedmods[agent], config["agents"][agent][1:len(config["agents"][agent])])()
+            self.loadedmodules[agent] = import_module(config["agents"][agent], "agents")
+            self.instantiatedclasses[agent] = getattr(self.loadedmodules[agent], config["agents"][agent][1:len(config["agents"][agent])])()
             if agent in config["keywords"]:
-                self.agentKeywords[agent] = self.instclasses[agent].keywords() + json.loads(config["keywords"][agent])
+                self.agentkeywords[agent] = self.instantiatedclasses[agent].keywords() + json.loads(config["keywords"][agent])
             else:
-                self.agentKeywords[agent] = self.instclasses[agent].keywords()
+                self.agentkeywords[agent] = self.instantiatedclasses[agent].keywords()
 
         # Nona go brrrrrrrr
 
@@ -39,10 +39,10 @@ class NonaClass:
 
     def summonAgent(self, tokens):
         for token in tokens:
-            for agent in self.agentKeywords:
-                keywords = self.agentKeywords[agent]
+            for agent in self.agentkeywords:
+                keywords = self.agentkeywords[agent]
                 if token in keywords:
-                    self.shorttermmemory["currentAgent"] = self.instclasses[agent]
+                    self.shorttermmemory["currentAgent"] = self.instantiatedclasses[agent]
                     # this is when the nona actor asks the agent actor
                     code, output = self.shorttermmemory["currentAgent"].interpret(tokens)
                     match code:
@@ -70,7 +70,7 @@ class NonaClass:
         return output
 
     def addKeyword(self, agentName, keyword):
-        self.agentKeywords[agentName] = self.agentKeywords[agentName] + [keyword]
+        self.agentkeywords[agentName] = self.agentkeywords[agentName] + [keyword]
         config = configparser.ConfigParser()
         config.read('config.ini')
         if agentName in config["keywords"]:
@@ -84,15 +84,15 @@ class NonaClass:
         config = configparser.ConfigParser()
         config.read('config.ini')
         config["agents"][agentName] = filename
-        self.loadedmods[agentName] = import_module(filename, "agents")
-        obj = getattr(self.loadedmods[agentName], filename[1:len(filename)])()
+        self.loadedmodules[agentName] = import_module(filename, "agents")
+        obj = getattr(self.loadedmodules[agentName], filename[1:len(filename)])()
         tempKeywords = obj.keywords()
         if agentName in config["keywords"]:
             tempKeywords = tempKeywords + json.loads(config["keywords"][agentName])
         with open('config.ini', 'w') as configfile:
             config.write(configfile)
-        self.instclasses[agentName] = obj
-        self.agentKeywords[agentName] = tempKeywords
+        self.instantiatedclasses[agentName] = obj
+        self.agentkeywords[agentName] = tempKeywords
         return "successfully loaded"
 
     def unloadAgent(self, agentName):
@@ -101,9 +101,9 @@ class NonaClass:
         config.remove_option("agents", agentName)
         with open('config.ini', 'w') as configfile:
             config.write(configfile)
-        self.loadedmods.pop(agentName)
-        self.instclasses.pop(agentName)
-        self.agentKeywords.pop(agentName)
+        self.loadedmodules.pop(agentName)
+        self.instantiatedclasses.pop(agentName)
+        self.agentkeywords.pop(agentName)
         return "successfully unloaded"
 
 # actor(s)/class(es) here
@@ -120,4 +120,4 @@ class NonaActor(Actor):
 if __name__ == '__main__':
     # witchcraft goes here
     actsys = ActorSystem("multiprocTCPBase")
-    Nonaactor = actsys.createActor(NonaActor)
+    Nona = actsys.createActor(NonaActor)
