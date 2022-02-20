@@ -111,10 +111,9 @@ class NonaClass:
 
 # actor(s)/class(es) here
 class NonaActor(Actor):
-    class AgentActor(Actor):
-        def __init__(self):
-            super().__init__()
-            self.NonaObj = NonaClass()
+    def __init__(self):
+        super().__init__()
+        self.NonaObj = NonaClass()
 
     def receiveMessage(self, msg, sender):
         print(msg)
