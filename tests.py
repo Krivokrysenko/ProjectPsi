@@ -26,7 +26,7 @@ class test(unittest.TestCase):
         self.assertTrue(NonaObj.agentkeywords["alarm"][2] == "remind me at")
         NonaObj.unloadAgent("alarm")
         self.assertEqual(NonaObj.loadedmodules, {})
-        self.assertEqual(NonaObj.agentactors, {})
+        self.assertEqual(NonaObj.instantiatedclasses, {})
         self.assertEqual(NonaObj.agentkeywords, {})
 
     def test_addKeyword(self):

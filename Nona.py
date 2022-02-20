@@ -101,9 +101,12 @@ class NonaClass:
         config.remove_option("agents", agentName)
         with open('config.ini', 'w') as configfile:
             config.write(configfile)
-        self.loadedmodules.pop(agentName)
-        self.instantiatedclasses.pop(agentName)
-        self.agentkeywords.pop(agentName)
+        if agentName in self.loadedmodules:
+            self.loadedmodules.pop(agentName)
+        if agentName in self.instantiatedclasses:
+            self.instantiatedclasses.pop(agentName)
+        if agentName in self.agentkeywords:
+            self.agentkeywords.pop(agentName)
         return "successfully unloaded"
 
 # actor(s)/class(es) here
