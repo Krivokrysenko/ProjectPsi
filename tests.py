@@ -64,6 +64,6 @@ class test(unittest.TestCase):
         NonaObj.unloadAgent("timer")
 
     def test_resetcongiffortesting(self):
-        conf = open("congif.ini", "w")
+        conf = open("config.ini", "w")
         conf.write('[agents]\n\n[keywords]\nnonacancel = ["nevermind", "never", "mind", "cancel"]\nalarm = ["set an alarm", "remind me at"]\n')
         conf.close()
