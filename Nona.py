@@ -7,6 +7,7 @@ from thespian.actors import *
 # import enum codes
 from agents.agent import Code
 
+
 # class here
 class NonaClass:
     def __init__(self):
@@ -20,9 +21,11 @@ class NonaClass:
         config.read('config.ini')
         for agent in config["agents"]:
             self.loadedmodules[agent] = import_module(config["agents"][agent], "agents")
-            self.instantiatedclasses[agent] = getattr(self.loadedmodules[agent], config["agents"][agent][1:len(config["agents"][agent])])()
+            self.instantiatedclasses[agent] = getattr(self.loadedmodules[agent],
+                                                      config["agents"][agent][1:len(config["agents"][agent])])()
             if agent in config["keywords"]:
-                self.agentkeywords[agent] = self.instantiatedclasses[agent].keywords() + json.loads(config["keywords"][agent])
+                self.agentkeywords[agent] = self.instantiatedclasses[agent].keywords() + json.loads(
+                    config["keywords"][agent])
             else:
                 self.agentkeywords[agent] = self.instantiatedclasses[agent].keywords()
 
@@ -109,17 +112,24 @@ class NonaClass:
             self.agentkeywords.pop(agentName)
         return "successfully unloaded"
 
+
 # actor(s)/class(es) here
 class NonaActor(Actor):
     def __init__(self):
         super().__init__()
         self.NonaObj = NonaClass()
+        self.agentactors = {}
+        for agent in self.NonaObj.loadedmodules:
+            self.agentactors[agent] = self.createActor(self.NonaObj.loadedmodules[agent])
 
     def receiveMessage(self, msg, sender):
-        print(msg)
+        match msg:
+            case "test":
+                self.send(sender, self.agentactors)
+
 
 # TODO actually figure out the actors communication
 if __name__ == '__main__':
-    # witchcraft goes here
     actsys = ActorSystem("multiprocTCPBase")
     Nona = actsys.createActor(NonaActor)
+    print(actsys.ask(Nona, "test"))
