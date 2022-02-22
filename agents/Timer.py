@@ -32,5 +32,5 @@ class Timer(agents.agent.Agent):
     # actor stuff
 
     def receiveMessage(self, msg, sender):
-        idkwhattodowiththis = self.interpret(msg)
-        print("congrats ya did it")
+        # idkwhattodowiththis = self.interpret(msg)
+        self.send(sender, "congrats ya did it")

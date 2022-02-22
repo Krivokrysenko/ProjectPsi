@@ -1,5 +1,6 @@
 # module imports
 import configparser
+import time
 from importlib import import_module
 import json
 from thespian.actors import *
@@ -7,6 +8,7 @@ from thespian.actors import *
 # import enum codes
 from agents.agent import Code
 
+import agents.Timer
 
 # class here
 class NonaClass:
@@ -119,17 +121,25 @@ class NonaActor(Actor):
         super().__init__()
         self.NonaObj = NonaClass()
         self.agentactors = {}
-        for agent in self.NonaObj.loadedmodules:
-            self.agentactors[agent] = self.createActor(self.NonaObj.loadedmodules[agent])
+        self.timertest = None
+
+    def startup(self):
+        self.agentactors["timer"] = self.createActor(agents.Timer.Timer)
+        self.timertest = self.createActor(agents.Timer.Timer)
 
     def receiveMessage(self, msg, sender):
         match msg:
             case "test":
-                self.send(sender, self.agentactors)
+                self.startup()
+                sendback = self.send(self.timertest, "henlo")
+                self.send(sender, sendback)
 
 
 # TODO actually figure out the actors communication
 if __name__ == '__main__':
     actsys = ActorSystem("multiprocTCPBase")
     Nona = actsys.createActor(NonaActor)
+    timer = actsys.createActor(agents.Timer.Timer)
+    print(actsys.ask(timer, "henlo"))
+    # time.sleep(10)
     print(actsys.ask(Nona, "test"))
