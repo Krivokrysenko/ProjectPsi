@@ -1,13 +1,13 @@
 import agents.agent
+import ray
 
 keywords = ["alarm"]
 
-
+@ray.remote
 class AlArm(agents.agent.Agent):
     def __init__(self):
         super().__init__()
 
-    # non-actor stuff
 
     def keywords(self):
         return ["alarm"]
@@ -24,9 +24,3 @@ class AlArm(agents.agent.Agent):
                 # this is an index out of bounds error in the making
                 unit = tokens[tokens.index(token) + 1]
         return self.outputToNona("time: " + str(time) + "\n unit: " + unit)
-
-    # actor stuff
-
-    def receiveMessage(self, msg, sender):
-        idkwhattodowiththis = self.interpret(msg)
-        print("beep beep beep")

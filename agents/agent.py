@@ -1,19 +1,16 @@
 from enum import Enum, auto
-from thespian.actors import *
+import ray
 
-
-# TODO get rid of these enums cause you can replace them with thespian ask/tell
+# TODO get rid of these enums?
 class Code(Enum):
     INFO = auto()
     OUT = auto()
 
-
 # TODO finish fleshing this out and change Timer/AlArm to extend this properly/use the API
-class Agent(Actor):
+
+class Agent:
     def __init__(self):
         super().__init__()
-
-    # non-actor stuff
 
     def keywords(self):
         return None
@@ -26,8 +23,3 @@ class Agent(Actor):
 
     def outputToNona(self, output):
         return Code.OUT, output
-
-    # actor stuff
-
-    def receiveMessage(self, msg, sender):
-        self.interpret(msg)

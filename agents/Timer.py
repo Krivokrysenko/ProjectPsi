@@ -1,16 +1,14 @@
 import agents.agent
 import time
-from thespian.actors import *
+import ray
 
 keywords = ["timer"]
 
-
 # TODO do not use sleep or time or whatever just send a delayed message to yourself or nona for the love of goosh
+@ray.remote
 class Timer(agents.agent.Agent):
     def __init__(self):
-        super().__init__()  # pycharm is happy with this here but i forgor what it does
-
-    # non-actor stuff
+        super().__init__()
 
     def keywords(self):
         return ["timer"]
@@ -28,9 +26,3 @@ class Timer(agents.agent.Agent):
         else:
             time.sleep(amount)
             return self.outputToNona("beep beep beep")
-
-    # actor stuff
-
-    def receiveMessage(self, msg, sender):
-        # idkwhattodowiththis = self.interpret(msg)
-        self.send(sender, "congrats ya did it")

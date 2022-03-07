@@ -3,12 +3,15 @@ import configparser
 import time
 from importlib import import_module
 import json
-from thespian.actors import *
+import ray
+
+# TODO move this?
+ray.init()
+# use this to debug by forcing onto single process:
+# ray.init(local_mode=True)
 
 # import enum codes
 from agents.agent import Code
-
-import agents.Timer
 
 # class here
 class NonaClass:
@@ -18,7 +21,7 @@ class NonaClass:
         self.instantiatedclasses = {}
         self.agentkeywords = {}
 
-        # TODO make this create actor objects instead of class objects
+        # TODO make this create actor objects instead of class objects (this is still an issue with ray lol)
         config = configparser.ConfigParser()
         config.read('config.ini')
         for agent in config["agents"]:
@@ -50,11 +53,10 @@ class NonaClass:
                     self.shorttermmemory["currentAgent"] = self.instantiatedclasses[agent]
                     # this is when the nona actor asks the agent actor
                     code, output = self.shorttermmemory["currentAgent"].interpret(tokens)
-                    match code:
-                        case Code.INFO:
-                            return self.requestFromUser(output)
-                        case Code.OUT:
-                            return self.outputToUser(output)
+                    if code == Code.INFO:
+                        return self.requestFromUser(output)
+                    elif code == Code.OUT:
+                        return self.outputToUser(output)
 
     def requestFromUser(self, request):
         self.outputToUser(request)
@@ -64,11 +66,10 @@ class NonaClass:
             return self.outputToUser("Okay!")
         else:
             code, output = self.shorttermmemory["currentAgent"].interpret(tokens)
-            match code:
-                case Code.INFO:
-                    return self.requestFromUser(output)
-                case Code.OUT:
-                    return self.outputToUser(output)
+            if code == Code.INFO:
+                return self.requestFromUser(output)
+            elif code == Code.OUT:
+                return self.outputToUser(output)
 
     def outputToUser(self, output):
         print(output)
@@ -115,31 +116,6 @@ class NonaClass:
         return "successfully unloaded"
 
 
-# actor(s)/class(es) here
-class NonaActor(Actor):
-    def __init__(self):
-        super().__init__()
-        self.NonaObj = NonaClass()
-        self.agentactors = {}
-        self.timertest = None
-
-    def startup(self):
-        self.agentactors["timer"] = self.createActor(agents.Timer.Timer)
-        self.timertest = self.createActor(agents.Timer.Timer)
-
-    def receiveMessage(self, msg, sender):
-        match msg:
-            case "test":
-                self.startup()
-                sendback = self.send(self.timertest, "henlo")
-                self.send(sender, sendback)
-
-
 # TODO actually figure out the actors communication
 if __name__ == '__main__':
-    actsys = ActorSystem("multiprocTCPBase")
-    Nona = actsys.createActor(NonaActor)
-    timer = actsys.createActor(agents.Timer.Timer)
-    print(actsys.ask(timer, "henlo"))
-    # time.sleep(10)
-    print(actsys.ask(Nona, "test"))
+    print("hi :-)")
