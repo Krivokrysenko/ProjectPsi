@@ -27,14 +27,12 @@ class NonaClass:
         for agent in config["agents"]:
             self.loadedmodules[agent] = import_module(config["agents"][agent], "agents")
             self.instantiatedclasses[agent] = getattr(self.loadedmodules[agent],
-                                                      config["agents"][agent][1:len(config["agents"][agent])])()
+                                                      config["agents"][agent][1:len(config["agents"][agent])]).remote()
             if agent in config["keywords"]:
-                self.agentkeywords[agent] = self.instantiatedclasses[agent].keywords() + json.loads(
+                self.agentkeywords[agent] = ray.get(self.instantiatedclasses[agent].keywords.remote()) + json.loads(
                     config["keywords"][agent])
             else:
-                self.agentkeywords[agent] = self.instantiatedclasses[agent].keywords()
-
-        # Nona go brrrrrrrr
+                self.agentkeywords[agent] = ray.get(self.instantiatedclasses[agent].keywords.remote())
 
         self.shorttermmemory = {
             "cancelKeywords": json.loads(config["keywords"]["nonacancel"]),
@@ -52,7 +50,7 @@ class NonaClass:
                 if token in keywords:
                     self.shorttermmemory["currentAgent"] = self.instantiatedclasses[agent]
                     # this is when the nona actor asks the agent actor
-                    code, output = self.shorttermmemory["currentAgent"].interpret(tokens)
+                    code, output = ray.get(self.shorttermmemory["currentAgent"].interpret.remote(tokens))
                     if code == Code.INFO:
                         return self.requestFromUser(output)
                     elif code == Code.OUT:
@@ -65,7 +63,7 @@ class NonaClass:
         if any(word in tokens for word in self.shorttermmemory["cancelKeywords"]):
             return self.outputToUser("Okay!")
         else:
-            code, output = self.shorttermmemory["currentAgent"].interpret(tokens)
+            code, output = ray.get(self.shorttermmemory["currentAgent"].interpret.remote(tokens))
             if code == Code.INFO:
                 return self.requestFromUser(output)
             elif code == Code.OUT:
@@ -91,8 +89,8 @@ class NonaClass:
         config.read('config.ini')
         config["agents"][agentName] = filename
         self.loadedmodules[agentName] = import_module(filename, "agents")
-        obj = getattr(self.loadedmodules[agentName], filename[1:len(filename)])()
-        tempKeywords = obj.keywords()
+        obj = getattr(self.loadedmodules[agentName], filename[1:len(filename)]).remote()
+        tempKeywords = ray.get(obj.keywords.remote())
         if agentName in config["keywords"]:
             tempKeywords = tempKeywords + json.loads(config["keywords"][agentName])
         with open('config.ini', 'w') as configfile:
@@ -116,6 +114,6 @@ class NonaClass:
         return "successfully unloaded"
 
 
-# TODO actually figure out the actors communication
+# TODO finish conversion (ray.get, etc)
 if __name__ == '__main__':
     print("hi :-)")
