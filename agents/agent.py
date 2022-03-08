@@ -1,5 +1,4 @@
 from enum import Enum, auto
-import ray
 
 # TODO get rid of these enums?
 class Code(Enum):

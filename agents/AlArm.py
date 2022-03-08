@@ -1,9 +1,7 @@
 import agents.agent
-import ray
 
 keywords = ["alarm"]
 
-@ray.remote
 class AlArm(agents.agent.Agent):
     def __init__(self):
         super().__init__()

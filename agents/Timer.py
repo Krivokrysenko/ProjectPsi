@@ -1,11 +1,9 @@
 import agents.agent
 import time
-import ray
 
 keywords = ["timer"]
 
 # TODO do not use sleep or time or whatever just send a delayed message to yourself or nona for the love of goosh
-@ray.remote
 class Timer(agents.agent.Agent):
     def __init__(self):
         super().__init__()
