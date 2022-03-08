@@ -110,12 +110,12 @@ class NonaClass:
 async def test():
     test = asyncio.create_task(test2())
     print("hi :-)")
-    await asyncio.sleep(2)
+    # await asyncio.sleep(20)
+    await test
 
 async def test2():
     await asyncio.sleep(1)
     print("beep beep beep")
-    return "bloop"
 
 # TODO ???
 if __name__ == '__main__':
