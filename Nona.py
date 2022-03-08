@@ -3,6 +3,7 @@ import configparser
 import time
 from importlib import import_module
 import json
+import asyncio
 
 # import enum codes
 from agents.agent import Code
@@ -106,7 +107,16 @@ class NonaClass:
             self.agentkeywords.pop(agentName)
         return "successfully unloaded"
 
+async def test():
+    test = asyncio.create_task(test2())
+    print("hi :-)")
+    await asyncio.sleep(2)
+
+async def test2():
+    await asyncio.sleep(1)
+    print("beep beep beep")
+    return "bloop"
 
 # TODO ???
 if __name__ == '__main__':
-    print("hi :-)")
+    asyncio.run(test())
