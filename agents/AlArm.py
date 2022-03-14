@@ -1,19 +1,14 @@
 import agents.agent
 
-keywords = ["alarm"]
-
 class AlArm(agents.agent.Agent):
     def __init__(self):
+        self.keywords = ["alarm"]
         super().__init__()
 
+    async def interpret(self, tokens):
+        return await self.alarm(tokens)
 
-    def keywords(self):
-        return ["alarm"]
-
-    def interpret(self, tokens):
-        return self.alarm(tokens)
-
-    def alarm(self, tokens):
+    async def alarm(self, tokens):
         time = 0
         unit = ""
         for token in tokens:
@@ -21,4 +16,5 @@ class AlArm(agents.agent.Agent):
                 time = token
                 # this is an index out of bounds error in the making
                 unit = tokens[tokens.index(token) + 1]
-        return self.outputToNona("time: " + str(time) + "\n unit: " + unit)
+        print("time: " + str(time) + "\n unit: " + unit)
+        return await self.outputToNona("time: " + str(time) + "\n unit: " + unit)

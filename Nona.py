@@ -1,6 +1,5 @@
 # module imports
 import configparser
-import time
 from importlib import import_module
 import json
 import asyncio
@@ -11,11 +10,12 @@ from agents.agent import Code
 # class here
 class NonaClass:
     def __init__(self):
-        # code to dynamically import agents, might need to clean this up/move it
         self.loadedmodules = {}
         self.instantiatedclasses = {}
         self.agentkeywords = {}
+        self.shorttermmemory = {}
 
+    async def setup(self):
         config = configparser.ConfigParser()
         config.read('config.ini')
         for agent in config["agents"]:
@@ -23,51 +23,52 @@ class NonaClass:
             self.instantiatedclasses[agent] = getattr(self.loadedmodules[agent],
                                                       config["agents"][agent][1:len(config["agents"][agent])])()
             if agent in config["keywords"]:
-                self.agentkeywords[agent] = self.instantiatedclasses[agent].keywords() + json.loads(
+                self.agentkeywords[agent] = self.instantiatedclasses[agent].keywords + json.loads(
                     config["keywords"][agent])
             else:
-                self.agentkeywords[agent] = self.instantiatedclasses[agent].keywords()
-
+                self.agentkeywords[agent] = self.instantiatedclasses[agent].keywords
         self.shorttermmemory = {
             "cancelKeywords": json.loads(config["keywords"]["nonacancel"]),
             "currentAgent": None
         }
 
-    def acceptInput(self, userstring):
-        tokens = userstring.split(" ")
-        return self.summonAgent(tokens)
+    # async def listen(self):
 
-    def summonAgent(self, tokens):
+    async def acceptInput(self, userstring):
+        tokens = userstring.split(" ")
+        return await self.summonAgent(tokens)
+
+    async def summonAgent(self, tokens):
         for token in tokens:
             for agent in self.agentkeywords:
                 keywords = self.agentkeywords[agent]
                 if token in keywords:
                     self.shorttermmemory["currentAgent"] = self.instantiatedclasses[agent]
                     # this is when the nona actor asks the agent actor
-                    code, output = self.shorttermmemory["currentAgent"].interpret(tokens)
+                    code, output = await self.shorttermmemory["currentAgent"].interpret(tokens)
                     if code == Code.INFO:
-                        return self.requestFromUser(output)
+                        return await self.requestFromUser(output)
                     elif code == Code.OUT:
-                        return self.outputToUser(output)
+                        return await self.outputToUser(output)
 
-    def requestFromUser(self, request):
-        self.outputToUser(request)
+    async def requestFromUser(self, request):
+        await self.outputToUser(request)
         answer = input()
         tokens = answer.split(" ")
         if any(word in tokens for word in self.shorttermmemory["cancelKeywords"]):
-            return self.outputToUser("Okay!")
+            return await self.outputToUser("Okay!")
         else:
-            code, output = self.shorttermmemory["currentAgent"].interpret(tokens)
+            code, output = await self.shorttermmemory["currentAgent"].interpret(tokens)
             if code == Code.INFO:
-                return self.requestFromUser(output)
+                return await self.requestFromUser(output)
             elif code == Code.OUT:
-                return self.outputToUser(output)
+                return await self.outputToUser(output)
 
-    def outputToUser(self, output):
+    async def outputToUser(self, output):
         print(output)
         return output
 
-    def addKeyword(self, agentName, keyword):
+    async def addKeyword(self, agentName, keyword):
         self.agentkeywords[agentName] = self.agentkeywords[agentName] + [keyword]
         config = configparser.ConfigParser()
         config.read('config.ini')
@@ -78,13 +79,13 @@ class NonaClass:
         with open('config.ini', 'w') as configfile:
             config.write(configfile)
 
-    def loadAgent(self, agentName, filename):
+    async def loadAgent(self, agentName, filename):
         config = configparser.ConfigParser()
         config.read('config.ini')
         config["agents"][agentName] = filename
         self.loadedmodules[agentName] = import_module(filename, "agents")
         obj = getattr(self.loadedmodules[agentName], filename[1:len(filename)])()
-        tempKeywords = obj.keywords()
+        tempKeywords = obj.keywords
         if agentName in config["keywords"]:
             tempKeywords = tempKeywords + json.loads(config["keywords"][agentName])
         with open('config.ini', 'w') as configfile:
@@ -93,7 +94,7 @@ class NonaClass:
         self.agentkeywords[agentName] = tempKeywords
         return "successfully loaded"
 
-    def unloadAgent(self, agentName):
+    async def unloadAgent(self, agentName):
         config = configparser.ConfigParser()
         config.read('config.ini')
         config.remove_option("agents", agentName)
@@ -107,16 +108,21 @@ class NonaClass:
             self.agentkeywords.pop(agentName)
         return "successfully unloaded"
 
-async def test():
-    test = asyncio.create_task(test2())
-    print("hi :-)")
-    # await asyncio.sleep(20)
-    await test
+# TODO remove this
 
 async def test2():
-    await asyncio.sleep(1)
-    print("beep beep beep")
+    while True:
+        await asyncio.sleep(3)
+        print("oop")
 
-# TODO ???
+async def test():
+    asyncio.create_task(test2())
+    while True:
+        await asyncio.sleep(1)
+        print("loop")
+
 if __name__ == '__main__':
-    asyncio.run(test())
+    # https://tutorialedge.net/python/concurrency/asyncio-event-loops-tutorial/
+    NonaLoop = asyncio.new_event_loop()
+    NonaLoop.create_task(test())
+    NonaLoop.run_forever()

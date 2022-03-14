@@ -9,16 +9,14 @@ class Code(Enum):
 
 class Agent:
     def __init__(self):
+        self.keywords = []
         super().__init__()
 
-    def keywords(self):
+    async def interpret(self, tokens):
         return None
 
-    def interpret(self, tokens):
-        return None
-
-    def requestMoreInfo(self, request):
+    async def requestMoreInfo(self, request):
         return Code.INFO, request
 
-    def outputToNona(self, output):
+    async def outputToNona(self, output):
         return Code.OUT, output

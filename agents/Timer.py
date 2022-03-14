@@ -1,26 +1,23 @@
 import agents.agent
-import time
+import asyncio
 
-keywords = ["timer"]
-
-# TODO do not use sleep or time or whatever just send a delayed message to yourself or nona for the love of goosh
 class Timer(agents.agent.Agent):
     def __init__(self):
+        self.keywords = ["timer"]
         super().__init__()
 
-    def keywords(self):
-        return ["timer"]
+    async def interpret(self, tokens):
+        return await self.timer(tokens)
 
-    def interpret(self, tokens):
-        return self.timer(tokens)
-
-    def timer(self, tokens):
+    async def timer(self, tokens):
         amount = None
         for token in tokens:
             if token.isdigit():
                 amount = int(token)
         if amount is None:
-            return self.requestMoreInfo("How long do you want to set a timer for?")
+            return await self.requestMoreInfo("How long do you want to set a timer for?")
         else:
-            time.sleep(amount)
-            return self.outputToNona("beep beep beep")
+            print("timer set for " + str(amount))
+            await asyncio.sleep(amount)
+            print("timer for " + str(amount) + ":")
+            return await self.outputToNona("beep beep beep")
