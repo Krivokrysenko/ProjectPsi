@@ -9,8 +9,10 @@ class Code(Enum):
 
 class Agent:
     def __init__(self):
-        self.keywords = []
-        super().__init__()
+        self.keywords = self.getKeywords()
+
+    def getKeywords(self):
+        return []
 
     async def interpret(self, tokens):
         return None

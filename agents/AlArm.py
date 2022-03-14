@@ -1,9 +1,8 @@
 import agents.agent
 
 class AlArm(agents.agent.Agent):
-    def __init__(self):
-        self.keywords = ["alarm"]
-        super().__init__()
+    def getKeywords(self):
+        return ["alarm"]
 
     async def interpret(self, tokens):
         return await self.alarm(tokens)

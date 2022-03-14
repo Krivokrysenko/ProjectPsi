@@ -2,9 +2,8 @@ import agents.agent
 import asyncio
 
 class Timer(agents.agent.Agent):
-    def __init__(self):
-        self.keywords = ["timer"]
-        super().__init__()
+    def getKeywords(self):
+        return ["timer"]
 
     async def interpret(self, tokens):
         return await self.timer(tokens)

@@ -7,7 +7,6 @@ import pytest
 @pytest.mark.asyncio
 async def test_basic():
     NonaObj = Nona.NonaClass()
-    await NonaObj.setup()
     await NonaObj.loadAgent("alarm", ".AlArm")
     await NonaObj.loadAgent("timer", ".Timer")
     actual = await NonaObj.acceptInput("alarm 7 min")
@@ -22,7 +21,6 @@ async def test_basic():
 @pytest.mark.asyncio
 async def test_keywords():
     NonaObj = Nona.NonaClass()
-    await NonaObj.setup()
     await NonaObj.loadAgent("alarm", ".AlArm")
     assert NonaObj.agentkeywords["alarm"][0] == "alarm"
     assert NonaObj.agentkeywords["alarm"][1] == "set an alarm"
@@ -35,7 +33,6 @@ async def test_keywords():
 @pytest.mark.asyncio
 async def test_addKeyword():
     NonaObj = Nona.NonaClass()
-    await NonaObj.setup()
     await NonaObj.loadAgent("alarm", ".AlArm")
     previous = NonaObj.agentkeywords["alarm"]
     await NonaObj.addKeyword("alarm", "al arm")
@@ -47,7 +44,6 @@ async def test_addKeyword():
 @pytest.mark.asyncio
 async def test_addKeyword2():
     NonaObj = Nona.NonaClass()
-    await NonaObj.setup()
     await NonaObj.loadAgent("timer", ".Timer")
     await NonaObj.addKeyword("timer", "set a timer")
     await NonaObj.unloadAgent("timer")
@@ -55,7 +51,6 @@ async def test_addKeyword2():
 @pytest.mark.asyncio
 async def test_requestFromUser():
     NonaObj = Nona.NonaClass()
-    await NonaObj.setup()
     await NonaObj.loadAgent("timer", ".Timer")
     await NonaObj.acceptInput("timer 4")
     await NonaObj.acceptInput("timer 2")
@@ -65,14 +60,12 @@ async def test_requestFromUser():
 @pytest.mark.asyncio
 async def test_loadfortesting():
     NonaObj = Nona.NonaClass()
-    await NonaObj.setup()
     await NonaObj.loadAgent("alarm", ".AlArm")
     await NonaObj.loadAgent("timer", ".Timer")
 
 @pytest.mark.asyncio
 async def test_unloadfortesting():
     NonaObj = Nona.NonaClass()
-    await NonaObj.setup()
     await NonaObj.unloadAgent("alarm")
     await NonaObj.unloadAgent("timer")
 

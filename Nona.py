@@ -14,8 +14,9 @@ class NonaClass:
         self.instantiatedclasses = {}
         self.agentkeywords = {}
         self.shorttermmemory = {}
+        self.setup()
 
-    async def setup(self):
+    def setup(self):
         config = configparser.ConfigParser()
         config.read('config.ini')
         for agent in config["agents"]:
