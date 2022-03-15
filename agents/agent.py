@@ -8,7 +8,8 @@ class Code(Enum):
 # TODO finish fleshing this out and change Timer/AlArm to extend this properly/use the API
 
 class Agent:
-    def __init__(self):
+    def __init__(self, Nona):
+        self.Nona = Nona
         self.keywords = self.getKeywords()
 
     def getKeywords(self):

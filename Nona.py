@@ -7,8 +7,7 @@ import asyncio
 # import enum codes
 from agents.agent import Code
 
-# class here
-class NonaClass:
+class Nona:
     def __init__(self):
         self.loadedmodules = {}
         self.instantiatedclasses = {}
@@ -22,7 +21,7 @@ class NonaClass:
         for agent in config["agents"]:
             self.loadedmodules[agent] = import_module(config["agents"][agent], "agents")
             self.instantiatedclasses[agent] = getattr(self.loadedmodules[agent],
-                                                      config["agents"][agent][1:len(config["agents"][agent])])()
+                                                      config["agents"][agent][1:len(config["agents"][agent])])(self)
             if agent in config["keywords"]:
                 self.agentkeywords[agent] = self.instantiatedclasses[agent].keywords + json.loads(
                     config["keywords"][agent])
@@ -85,7 +84,7 @@ class NonaClass:
         config.read('config.ini')
         config["agents"][agentName] = filename
         self.loadedmodules[agentName] = import_module(filename, "agents")
-        obj = getattr(self.loadedmodules[agentName], filename[1:len(filename)])()
+        obj = getattr(self.loadedmodules[agentName], filename[1:len(filename)])(self)
         tempKeywords = obj.keywords
         if agentName in config["keywords"]:
             tempKeywords = tempKeywords + json.loads(config["keywords"][agentName])
