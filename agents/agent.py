@@ -1,12 +1,3 @@
-from enum import Enum, auto
-
-# TODO get rid of these enums?
-class Code(Enum):
-    INFO = auto()
-    OUT = auto()
-
-# TODO finish fleshing this out and change Timer/AlArm to extend this properly/use the API
-
 class Agent:
     def __init__(self, Nona):
         self.Nona = Nona
@@ -16,10 +7,11 @@ class Agent:
         return []
 
     async def interpret(self, tokens):
-        return None
+        # TODO is this the right use of pass?
+        pass
 
     async def requestMoreInfo(self, request):
-        return Code.INFO, request
+        self.Nona.requestFromUser(request)
 
     async def outputToNona(self, output):
-        return Code.OUT, output
+        self.Nona.outputToUser(output)

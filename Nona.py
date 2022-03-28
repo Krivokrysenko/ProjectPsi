@@ -4,9 +4,6 @@ from importlib import import_module
 import json
 import asyncio
 
-# import enum codes
-from agents.agent import Code
-
 class Nona:
     def __init__(self):
         self.loadedmodules = {}
@@ -36,7 +33,7 @@ class Nona:
 
     async def acceptInput(self, userstring):
         tokens = userstring.split(" ")
-        return await self.summonAgent(tokens)
+        await self.summonAgent(tokens)
 
     async def summonAgent(self, tokens):
         for token in tokens:
@@ -45,28 +42,21 @@ class Nona:
                 if token in keywords:
                     self.shorttermmemory["currentAgent"] = self.instantiatedclasses[agent]
                     # this is when the nona actor asks the agent actor
-                    code, output = await self.shorttermmemory["currentAgent"].interpret(tokens)
-                    if code == Code.INFO:
-                        return await self.requestFromUser(output)
-                    elif code == Code.OUT:
-                        return await self.outputToUser(output)
+                    asyncio.create_task(self.shorttermmemory["currentAgent"].interpret(tokens))
 
     async def requestFromUser(self, request):
         await self.outputToUser(request)
         answer = input()
         tokens = answer.split(" ")
         if any(word in tokens for word in self.shorttermmemory["cancelKeywords"]):
-            return await self.outputToUser("Okay!")
+            # TODO keep this or move to outputToUser?
+            print("Okay!")
         else:
-            code, output = await self.shorttermmemory["currentAgent"].interpret(tokens)
-            if code == Code.INFO:
-                return await self.requestFromUser(output)
-            elif code == Code.OUT:
-                return await self.outputToUser(output)
+            asyncio.create_task(self.shorttermmemory["currentAgent"].interpret(tokens))
 
     async def outputToUser(self, output):
+        # TODO add queue system?
         print(output)
-        return output
 
     async def addKeyword(self, agentName, keyword):
         self.agentkeywords[agentName] = self.agentkeywords[agentName] + [keyword]
@@ -92,7 +82,6 @@ class Nona:
             config.write(configfile)
         self.instantiatedclasses[agentName] = obj
         self.agentkeywords[agentName] = tempKeywords
-        return "successfully loaded"
 
     async def unloadAgent(self, agentName):
         config = configparser.ConfigParser()
@@ -106,23 +95,3 @@ class Nona:
             self.instantiatedclasses.pop(agentName)
         if agentName in self.agentkeywords:
             self.agentkeywords.pop(agentName)
-        return "successfully unloaded"
-
-# TODO remove this
-
-async def test2():
-    while True:
-        await asyncio.sleep(3)
-        print("oop")
-
-async def test():
-    asyncio.create_task(test2())
-    while True:
-        await asyncio.sleep(1)
-        print("loop")
-
-if __name__ == '__main__':
-    # https://tutorialedge.net/python/concurrency/asyncio-event-loops-tutorial/
-    NonaLoop = asyncio.new_event_loop()
-    NonaLoop.create_task(test())
-    NonaLoop.run_forever()

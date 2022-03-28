@@ -5,7 +5,7 @@ class AlArm(agents.agent.Agent):
         return ["alarm"]
 
     async def interpret(self, tokens):
-        return await self.alarm(tokens)
+        await self.alarm(tokens)
 
     async def alarm(self, tokens):
         time = 0

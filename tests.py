@@ -5,20 +5,6 @@ import asyncio
 import pytest
 
 @pytest.mark.asyncio
-async def test_basic():
-    NonaObj = Nona.Nona()
-    await NonaObj.loadAgent("alarm", ".AlArm")
-    await NonaObj.loadAgent("timer", ".Timer")
-    actual = await NonaObj.acceptInput("alarm 7 min")
-    expected = "time: 7\n unit: min"
-    assert actual == expected
-    actual = await NonaObj.acceptInput("timer 1")
-    expected = "beep beep beep"
-    assert actual == expected
-    await NonaObj.unloadAgent("alarm")
-    await NonaObj.unloadAgent("timer")
-
-@pytest.mark.asyncio
 async def test_keywords():
     NonaObj = Nona.Nona()
     await NonaObj.loadAgent("alarm", ".AlArm")
@@ -56,12 +42,6 @@ async def test_requestFromUser():
     await NonaObj.acceptInput("timer 2")
     await asyncio.sleep(7)
     await NonaObj.unloadAgent("timer")
-
-# TODO: this
-
-@pytest.mark.asyncio
-async def test_agentAccessToNona():
-    NonaObj = Nona.Nona()
 
 @pytest.mark.asyncio
 async def test_loadfortesting():

@@ -6,7 +6,7 @@ class Timer(agents.agent.Agent):
         return ["timer"]
 
     async def interpret(self, tokens):
-        return await self.timer(tokens)
+        await self.timer(tokens)
 
     async def timer(self, tokens):
         amount = None
