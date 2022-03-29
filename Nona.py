@@ -45,6 +45,8 @@ class Nona:
                     asyncio.create_task(self.shorttermmemory["currentAgent"].interpret(tokens))
 
     async def requestFromUser(self, request):
+        # TODO test this/does this actually work
+        # TODO queue system?
         await self.outputToUser(request)
         answer = input()
         tokens = answer.split(" ")

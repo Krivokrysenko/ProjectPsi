@@ -1,5 +1,7 @@
 import agents.agent
 
+# TODO make this async
+
 class AlArm(agents.agent.Agent):
     def getKeywords(self):
         return ["alarm"]

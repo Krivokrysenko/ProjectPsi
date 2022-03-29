@@ -7,7 +7,6 @@ class Agent:
         return []
 
     async def interpret(self, tokens):
-        # TODO is this the right use of pass?
         pass
 
     async def requestMoreInfo(self, request):

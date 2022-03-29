@@ -14,9 +14,9 @@ class Timer(agents.agent.Agent):
             if token.isdigit():
                 amount = int(token)
         if amount is None:
-            return await self.requestMoreInfo("How long do you want to set a timer for?")
+            await self.requestMoreInfo("How long do you want to set a timer for?")
         else:
             print("timer set for " + str(amount))
             await asyncio.sleep(amount)
             print("timer for " + str(amount) + ":")
-            return await self.outputToNona("beep beep beep")
+            await self.outputToNona("beep beep beep")
