@@ -17,8 +17,7 @@ class Nona:
         config.read('config.ini')
         for agent in config["agents"]:
             self.loadedmodules[agent] = import_module(config["agents"][agent], "agents")
-            self.instantiatedclasses[agent] = getattr(self.loadedmodules[agent],
-                                                      config["agents"][agent][1:len(config["agents"][agent])])(self)
+            self.instantiatedclasses[agent] = getattr(self.loadedmodules[agent], config["agents"][agent][1:len(config["agents"][agent])])(self)
             if agent in config["keywords"]:
                 self.agentkeywords[agent] = self.instantiatedclasses[agent].keywords + json.loads(
                     config["keywords"][agent])
