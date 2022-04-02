@@ -41,6 +41,17 @@ async def test_requestFromUser():
     await NonaObj.acceptInput("timer 4")
     await NonaObj.acceptInput("timer 2")
     await asyncio.sleep(7)
+    await NonaObj.pullFromQueue()
+    await NonaObj.pullFromQueue()
+    await NonaObj.unloadAgent("timer")
+
+@pytest.mark.asyncio
+async def test_queue():
+    NonaObj = Nona.Nona()
+    await NonaObj.loadAgent("timer", ".Timer")
+    await NonaObj.acceptInput("timer 4")
+    await asyncio.sleep(7)
+    await NonaObj.pullFromQueue()
     await NonaObj.unloadAgent("timer")
 
 @pytest.mark.asyncio

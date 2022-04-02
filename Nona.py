@@ -3,6 +3,10 @@ import configparser
 from importlib import import_module
 import json
 import asyncio
+import queue
+
+# import enum codes
+from agents.agent import Code
 
 class Nona:
     def __init__(self):
@@ -10,6 +14,7 @@ class Nona:
         self.instantiatedclasses = {}
         self.agentkeywords = {}
         self.shorttermmemory = {}
+        self.queue = queue.Queue()
         self.setup()
 
     def setup(self):
@@ -29,6 +34,8 @@ class Nona:
         }
 
     # async def listen(self):
+    # TODO once listening loop is implemented,
+    #  Nona should alternate between checking the queue and listening for more input
 
     async def acceptInput(self, userstring):
         tokens = userstring.split(" ")
@@ -46,7 +53,7 @@ class Nona:
     async def requestFromUser(self, request):
         # TODO test this/does this actually work
         # TODO queue system?
-        await self.outputToUser(request)
+        print(request)
         answer = input()
         tokens = answer.split(" ")
         if any(word in tokens for word in self.shorttermmemory["cancelKeywords"]):
@@ -55,9 +62,18 @@ class Nona:
         else:
             asyncio.create_task(self.shorttermmemory["currentAgent"].interpret(tokens))
 
-    async def outputToUser(self, output):
-        # TODO add queue system?
-        print(output)
+    async def addToQueue(self, code, outreq):
+        self.queue.put([code, outreq])
+
+    async def pullFromQueue(self):
+        pulled = None if self.queue.empty() else self.queue.get()
+        if pulled is not None:
+            match pulled[0]:
+                case Code.OUT:
+                    print(pulled[1])
+                case Code.REQ:
+                    await self.requestFromUser(pulled[1])
+            self.queue.task_done()
 
     async def addKeyword(self, agentName, keyword):
         self.agentkeywords[agentName] = self.agentkeywords[agentName] + [keyword]

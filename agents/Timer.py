@@ -18,5 +18,4 @@ class Timer(agents.agent.Agent):
         else:
             print("timer set for " + str(amount))
             await asyncio.sleep(amount)
-            print("timer for " + str(amount) + ":")
-            await self.outputToNona("beep beep beep")
+            await self.outputToNona("timer for " + str(amount) + ": beep beep beep")

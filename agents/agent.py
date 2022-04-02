@@ -1,3 +1,9 @@
+import enum
+
+class Code(enum.Enum):
+    OUT = enum.auto
+    REQ = enum.auto
+
 class Agent:
     def __init__(self, Nona):
         self.Nona = Nona
@@ -10,7 +16,7 @@ class Agent:
         pass
 
     async def requestMoreInfo(self, request):
-        self.Nona.requestFromUser(request)
+        await self.Nona.addToQueue(Code.REQ, request)
 
     async def outputToNona(self, output):
-        self.Nona.outputToUser(output)
+        await self.Nona.addToQueue(Code.OUT, output)
