@@ -3,6 +3,7 @@ import enum
 class Code(enum.Enum):
     OUT = enum.auto
     REQ = enum.auto
+    # TODO IN code that marks inputs
 
 class Agent:
     def __init__(self, Nona):

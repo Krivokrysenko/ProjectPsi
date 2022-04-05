@@ -5,6 +5,7 @@ import json
 import asyncio
 import queue
 
+# TODO move this????
 # import enum codes
 from agents.agent import Code
 
@@ -14,6 +15,7 @@ class Nona:
         self.instantiatedclasses = {}
         self.agentkeywords = {}
         self.shorttermmemory = {}
+        # queue itself is threadsafe, objects inside are not
         self.queue = queue.Queue()
         self.setup()
 
@@ -34,9 +36,9 @@ class Nona:
         }
 
     # async def listen(self):
-    # TODO once listening loop is implemented,
-    #  Nona should alternate between checking the queue and listening for more input
+    # TODO concurrent listening that adds IN to queue
 
+    # TODO this should pull inputs from queue
     async def acceptInput(self, userstring):
         tokens = userstring.split(" ")
         await self.summonAgent(tokens)
@@ -51,8 +53,6 @@ class Nona:
                     asyncio.create_task(self.shorttermmemory["currentAgent"].interpret(tokens))
 
     async def requestFromUser(self, request):
-        # TODO test this/does this actually work
-        # TODO queue system?
         print(request)
         answer = input()
         tokens = answer.split(" ")
@@ -66,6 +66,7 @@ class Nona:
         self.queue.put([code, outreq])
 
     async def pullFromQueue(self):
+        # TODO IN stuff
         pulled = None if self.queue.empty() else self.queue.get()
         if pulled is not None:
             match pulled[0]:
