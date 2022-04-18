@@ -1,9 +1,4 @@
-import enum
-
-class Code(enum.Enum):
-    OUT = enum.auto
-    REQ = enum.auto
-    # TODO IN code that marks inputs
+from codes import Codes
 
 class Agent:
     def __init__(self, Nona):
@@ -17,7 +12,7 @@ class Agent:
         pass
 
     async def requestMoreInfo(self, request):
-        await self.Nona.addToQueue(Code.REQ, request)
+        await self.Nona.addToQueue(Codes.REQ, request)
 
     async def outputToNona(self, output):
-        await self.Nona.addToQueue(Code.OUT, output)
+        await self.Nona.addToQueue(Codes.OUT, output)

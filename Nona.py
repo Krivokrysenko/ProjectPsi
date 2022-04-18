@@ -5,9 +5,8 @@ import json
 import asyncio
 import queue
 
-# TODO move this????
-# import enum codes
-from agents.agent import Code
+from codes import Codes
+import voice
 
 class Nona:
     def __init__(self):
@@ -35,11 +34,23 @@ class Nona:
             "currentAgent": None
         }
 
-    async def listen(self):
-        pass
-        # TODO concurrent listening that adds voice input to queue... here or voice file? this vs acceptInput?
+    async def addToQueue(self, code, outreq):
+        self.queue.put([code, outreq])
 
-    # TODO this should pull inputs from queue
+    async def pullFromQueue(self):
+        pulled = None if self.queue.empty() else self.queue.get()
+        if pulled is not None:
+            match pulled[0]:
+                case Codes.OUT:
+                    # TODO voice output
+                    print(pulled[1])
+                case Codes.REQ:
+                    await self.requestFromUser(pulled[1])
+                case Codes.INP:
+                    await self.acceptInput(pulled[1])
+            self.queue.task_done()
+
+    # TODO this should recieve voice inputs from pullFromQueue
     async def acceptInput(self, userstring):
         tokens = userstring.split(" ")
         await self.summonAgent(tokens)
@@ -61,20 +72,6 @@ class Nona:
             print("Okay!")
         else:
             asyncio.create_task(self.shorttermmemory["currentAgent"].interpret(tokens))
-
-    async def addToQueue(self, code, outreq):
-        self.queue.put([code, outreq])
-
-    async def pullFromQueue(self):
-        # TODO IN stuff
-        pulled = None if self.queue.empty() else self.queue.get()
-        if pulled is not None:
-            match pulled[0]:
-                case Code.OUT:
-                    print(pulled[1])
-                case Code.REQ:
-                    await self.requestFromUser(pulled[1])
-            self.queue.task_done()
 
     async def addKeyword(self, agentName, keyword):
         self.agentkeywords[agentName] = self.agentkeywords[agentName] + [keyword]
