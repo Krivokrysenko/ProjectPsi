@@ -36,7 +36,7 @@ class Nona:
         }
 
     # async def listen(self):
-    # TODO concurrent listening that adds IN to queue
+    # TODO concurrent listening that adds voice input to queue
 
     # TODO this should pull inputs from queue
     async def acceptInput(self, userstring):
@@ -57,7 +57,6 @@ class Nona:
         answer = input()
         tokens = answer.split(" ")
         if any(word in tokens for word in self.shorttermmemory["cancelKeywords"]):
-            # TODO keep this or move to outputToUser?
             print("Okay!")
         else:
             asyncio.create_task(self.shorttermmemory["currentAgent"].interpret(tokens))
