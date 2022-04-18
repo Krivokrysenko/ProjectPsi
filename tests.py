@@ -1,69 +1,72 @@
 import unittest
 import Nona
-import time
+import asyncio
+# https://promity.com/2020/06/03/testing-asynchronous-code-in-python/
+import pytest
 
+@pytest.mark.asyncio
+async def test_keywords():
+    NonaObj = Nona.Nona()
+    await NonaObj.loadAgent("alarm", ".AlArm")
+    assert NonaObj.agentkeywords["alarm"][0] == "alarm"
+    assert NonaObj.agentkeywords["alarm"][1] == "set an alarm"
+    assert NonaObj.agentkeywords["alarm"][2] == "remind me at"
+    await NonaObj.unloadAgent("alarm")
+    assert NonaObj.loadedmodules == {}
+    assert NonaObj.instantiatedclasses == {}
+    assert NonaObj.agentkeywords == {}
 
-class test(unittest.TestCase):
+@pytest.mark.asyncio
+async def test_addKeyword():
+    NonaObj = Nona.Nona()
+    await NonaObj.loadAgent("alarm", ".AlArm")
+    previous = NonaObj.agentkeywords["alarm"]
+    await NonaObj.addKeyword("alarm", "al arm")
+    actual = NonaObj.agentkeywords["alarm"]
+    expected = previous + ["al arm"]
+    assert actual == expected
+    await NonaObj.unloadAgent("alarm")
 
-    def test_basic(self):
-        NonaObj = Nona.NonaClass()
-        NonaObj.loadAgent("alarm", ".AlArm")
-        NonaObj.loadAgent("timer", ".Timer")
-        actual = NonaObj.acceptInput("alarm 7 min")
-        expected = "time: 7\n unit: min"
-        self.assertEqual(actual, expected)
-        actual = NonaObj.acceptInput("timer 3")
-        expected = "beep beep beep"
-        self.assertEqual(actual, expected)
-        NonaObj.unloadAgent("alarm")
-        NonaObj.unloadAgent("timer")
+@pytest.mark.asyncio
+async def test_addKeyword2():
+    NonaObj = Nona.Nona()
+    await NonaObj.loadAgent("timer", ".Timer")
+    await NonaObj.addKeyword("timer", "set a timer")
+    await NonaObj.unloadAgent("timer")
 
-    def test_keywords(self):
-        NonaObj = Nona.NonaClass()
-        NonaObj.loadAgent("alarm", ".AlArm")
-        self.assertTrue(NonaObj.agentkeywords["alarm"][0] == "alarm")
-        self.assertTrue(NonaObj.agentkeywords["alarm"][1] == "set an alarm")
-        self.assertTrue(NonaObj.agentkeywords["alarm"][2] == "remind me at")
-        NonaObj.unloadAgent("alarm")
-        self.assertEqual(NonaObj.loadedmodules, {})
-        self.assertEqual(NonaObj.instantiatedclasses, {})
-        self.assertEqual(NonaObj.agentkeywords, {})
+@pytest.mark.asyncio
+async def test_requestFromUser():
+    NonaObj = Nona.Nona()
+    await NonaObj.loadAgent("timer", ".Timer")
+    await NonaObj.acceptInput("timer 4")
+    await NonaObj.acceptInput("timer 2")
+    await asyncio.sleep(7)
+    await NonaObj.pullFromQueue()
+    await NonaObj.pullFromQueue()
+    await NonaObj.unloadAgent("timer")
 
-    def test_addKeyword(self):
-        NonaObj = Nona.NonaClass()
-        NonaObj.loadAgent("alarm", ".AlArm")
-        previous = NonaObj.agentkeywords["alarm"]
-        NonaObj.addKeyword("alarm", "al arm")
-        actual = NonaObj.agentkeywords["alarm"]
-        expected = previous + ["al arm"]
-        self.assertEqual(actual, expected)
-        NonaObj.unloadAgent("alarm")
+@pytest.mark.asyncio
+async def test_queue():
+    NonaObj = Nona.Nona()
+    await NonaObj.loadAgent("timer", ".Timer")
+    await NonaObj.acceptInput("timer 4")
+    await asyncio.sleep(7)
+    await NonaObj.pullFromQueue()
+    await NonaObj.unloadAgent("timer")
 
-    def test_addKeyword2(self):
-        Nonaobj = Nona.NonaClass()
-        Nonaobj.loadAgent("timer", ".Timer")
-        Nonaobj.addKeyword("timer", "set a timer")
-        Nonaobj.unloadAgent("timer")
+@pytest.mark.asyncio
+async def test_loadfortesting():
+    NonaObj = Nona.Nona()
+    await NonaObj.loadAgent("alarm", ".AlArm")
+    await NonaObj.loadAgent("timer", ".Timer")
 
-    def test_requestFromUser(self):
-        NonaObj = Nona.NonaClass()
-        NonaObj.loadAgent("timer", ".Timer")
-        NonaObj.acceptInput("timer 4")
-        NonaObj.acceptInput("timer 2")
-        time.sleep(7)
-        NonaObj.unloadAgent("timer")
+@pytest.mark.asyncio
+async def test_unloadfortesting():
+    NonaObj = Nona.Nona()
+    await NonaObj.unloadAgent("alarm")
+    await NonaObj.unloadAgent("timer")
 
-    def test_loadfortesting(self):
-        NonaObj = Nona.NonaClass()
-        NonaObj.loadAgent("alarm", ".AlArm")
-        NonaObj.loadAgent("timer", ".Timer")
-
-    def test_unloadfortesting(self):
-        NonaObj = Nona.NonaClass()
-        NonaObj.unloadAgent("alarm")
-        NonaObj.unloadAgent("timer")
-
-    def test_resetcongiffortesting(self):
-        conf = open("config.ini", "w")
-        conf.write('[agents]\n\n[keywords]\nnonacancel = ["nevermind", "never", "mind", "cancel"]\nalarm = ["set an alarm", "remind me at"]\n')
-        conf.close()
+def test_resetcongiffortesting():
+    conf = open("config.ini", "w")
+    conf.write('[agents]\n\n[keywords]\nnonacancel = ["nevermind", "never", "mind", "cancel"]\nalarm = ["set an alarm", "remind me at"]\n')
+    conf.close()

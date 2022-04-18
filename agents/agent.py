@@ -1,24 +1,23 @@
-from enum import Enum, auto
+import enum
 
-# TODO get rid of these enums?
-class Code(Enum):
-    INFO = auto()
-    OUT = auto()
-
-# TODO finish fleshing this out and change Timer/AlArm to extend this properly/use the API
+class Code(enum.Enum):
+    OUT = enum.auto
+    REQ = enum.auto
+    # TODO IN code that marks inputs
 
 class Agent:
-    def __init__(self):
-        super().__init__()
+    def __init__(self, Nona):
+        self.Nona = Nona
+        self.keywords = self.getKeywords()
 
-    def keywords(self):
-        return None
+    def getKeywords(self):
+        return []
 
-    def interpret(self, tokens):
-        return None
+    async def interpret(self, tokens):
+        pass
 
-    def requestMoreInfo(self, request):
-        return Code.INFO, request
+    async def requestMoreInfo(self, request):
+        await self.Nona.addToQueue(Code.REQ, request)
 
-    def outputToNona(self, output):
-        return Code.OUT, output
+    async def outputToNona(self, output):
+        await self.Nona.addToQueue(Code.OUT, output)
