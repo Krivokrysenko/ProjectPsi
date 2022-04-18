@@ -35,8 +35,9 @@ class Nona:
             "currentAgent": None
         }
 
-    # async def listen(self):
-    # TODO concurrent listening that adds voice input to queue
+    async def listen(self):
+        pass
+        # TODO concurrent listening that adds voice input to queue... here or voice file? this vs acceptInput?
 
     # TODO this should pull inputs from queue
     async def acceptInput(self, userstring):
