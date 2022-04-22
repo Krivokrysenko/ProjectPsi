@@ -6,10 +6,11 @@ import asyncio
 import queue
 
 from codes import Codes
-import voice
+import voice # TODO class?
 
 class Nona:
     def __init__(self):
+        self.name = "Nona"
         self.loadedmodules = {}
         self.instantiatedclasses = {}
         self.agentkeywords = {}
@@ -29,6 +30,7 @@ class Nona:
                     config["keywords"][agent])
             else:
                 self.agentkeywords[agent] = self.instantiatedclasses[agent].keywords
+        self.name = config["name"]["name"]
         self.shorttermmemory = {
             "cancelKeywords": json.loads(config["keywords"]["nonacancel"]),
             "currentAgent": None
@@ -50,7 +52,6 @@ class Nona:
                     await self.acceptInput(pulled[1])
             self.queue.task_done()
 
-    # TODO this should recieve voice inputs from pullFromQueue
     async def acceptInput(self, userstring):
         tokens = userstring.split(" ")
         await self.summonAgent(tokens)

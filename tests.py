@@ -55,6 +55,11 @@ async def test_queue():
     await NonaObj.unloadAgent("timer")
 
 @pytest.mark.asyncio
+async def test_name():
+    NonaObj = Nona.Nona()
+    assert NonaObj.name == "Zephyr"
+
+@pytest.mark.asyncio
 async def test_loadfortesting():
     NonaObj = Nona.Nona()
     await NonaObj.loadAgent("alarm", ".AlArm")
@@ -68,5 +73,5 @@ async def test_unloadfortesting():
 
 def test_resetcongiffortesting():
     conf = open("config.ini", "w")
-    conf.write('[agents]\n\n[keywords]\nnonacancel = ["nevermind", "never", "mind", "cancel"]\nalarm = ["set an alarm", "remind me at"]\n')
+    conf.write('[agents]\n\n[keywords]\nnonacancel = ["nevermind", "never", "mind", "cancel"]\nalarm = ["set an alarm", "remind me at"]\n\n[name]\nname = Zephyr')
     conf.close()
