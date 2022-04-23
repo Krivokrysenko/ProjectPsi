@@ -16,6 +16,7 @@ class Timer(agents.agent.Agent):
         if amount is None:
             await self.requestMoreInfo("How long do you want to set a timer for?")
         else:
+            # TODO currently assumes seconds, search for time units and convert amount to match
             print("timer set for " + str(amount))
             await asyncio.sleep(amount)
             await self.outputToNona("timer for " + str(amount) + ": beep beep beep")
