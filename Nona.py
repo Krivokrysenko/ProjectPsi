@@ -102,7 +102,7 @@ class Nona:
         with open('config.ini', 'w') as configfile:
             config.write(configfile)
 
-    # TODO these only work when not async which might be an issue downt the line
+    # TODO these only work when not async which might be an issue down the line
 
     def loadAgent(self, agentName, filename):
         config = configparser.ConfigParser()

@@ -6,7 +6,6 @@ import vosk
 import sys
 
 import asyncio
-import json
 from codes import Codes
 
 class Voice:
