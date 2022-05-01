@@ -61,17 +61,17 @@ class Nona:
                 self.queue.task_done()
             await asyncio.sleep(0.01)
 
-    # TODO ignore if it the name isn't in there
     async def acceptInput(self, userstring):
         tokens = []
         for word in userstring.split(" "):
             try:
                 attempt = w2n.word_to_num(word)
             except:
-                tokens.append(word)
+                tokens.append(word.lower)
             else:
                 tokens.append(str(attempt))
-        await self.summonAgent(tokens)
+        if self.name.lower in tokens:
+            await self.summonAgent(tokens)
 
     async def summonAgent(self, tokens):
         for token in tokens:
