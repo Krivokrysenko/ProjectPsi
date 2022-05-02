@@ -9,6 +9,8 @@ from word2number import w2n
 from codes import Codes
 import voice
 
+DEBUG = True
+
 class Nona:
     def __init__(self):
         self.on = True  # flip to False while shutting down
@@ -20,10 +22,11 @@ class Nona:
         self.shorttermmemory = {}
         self.queue = queue.Queue() # queue itself is threadsafe, objects inside are not
         self.setup()
-        loop = asyncio.get_event_loop()
-        asyncio.ensure_future(self.voice.NonaListener())
-        asyncio.ensure_future(self.pullFromQueue())
-        loop.run_forever()
+        while self.on:
+            loop = asyncio.get_event_loop()
+            asyncio.ensure_future(self.voice.NonaListener())
+            asyncio.ensure_future(self.pullFromQueue())
+            loop.run_forever()
 
     def setup(self):
         config = configparser.ConfigParser()
@@ -44,7 +47,8 @@ class Nona:
         }
 
     async def addToQueue(self, code, outreq):
-        self.queue.put([code, outreq])
+        if code != Codes.INP or self.name.lower() in outreq.lower():
+            self.queue.put([code, outreq])
 
     async def pullFromQueue(self):
         while self.on:
@@ -52,12 +56,18 @@ class Nona:
             if pulled is not None:
                 match pulled[0]:
                     case Codes.OUT:
-                        # TODO voice output
-                        print(pulled[1])
+                        tosay = pulled[1]
+                        if DEBUG:
+                            print("saying: " + tosay)
+                        await self.voice.NonaSay(tosay)
                     case Codes.REQ:
                         await self.requestFromUser(pulled[1])
                     case Codes.INP:
-                        await self.acceptInput(pulled[1])
+                        # TODO use config off keywords or somethin
+                        if "shut down" in pulled[1].lower():
+                            self.on = False
+                        else:
+                            await self.acceptInput(pulled[1])
                 self.queue.task_done()
             await asyncio.sleep(0.01)
 
@@ -67,11 +77,10 @@ class Nona:
             try:
                 attempt = w2n.word_to_num(word)
             except:
-                tokens.append(word.lower)
+                tokens.append(word.lower())
             else:
                 tokens.append(str(attempt))
-        if self.name.lower in tokens:
-            await self.summonAgent(tokens)
+        await self.summonAgent(tokens)
 
     async def summonAgent(self, tokens):
         for token in tokens:
@@ -83,6 +92,7 @@ class Nona:
                     asyncio.create_task(self.shorttermmemory["currentAgent"].interpret(tokens))
 
     async def requestFromUser(self, request):
+        # TODO this needs to be completely redone to work with voice input
         print(request)
         answer = input()
         tokens = answer.split(" ")
@@ -102,7 +112,7 @@ class Nona:
         with open('config.ini', 'w') as configfile:
             config.write(configfile)
 
-    # TODO these only work when not async which might be an issue down the line
+    # these only work when not async which might be an issue down the line
 
     def loadAgent(self, agentName, filename):
         config = configparser.ConfigParser()

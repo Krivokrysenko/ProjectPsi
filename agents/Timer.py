@@ -9,6 +9,12 @@ class Timer(agents.agent.Agent):
         await self.timer(tokens)
 
     async def timer(self, tokens):
+        # TODO set a timer for an hour? set a timer for an hour and 30 minutes?
+        conversions = {
+            "seconds": 1,
+            "minutes": 60,
+            "hours": 60*60
+        }
         amount = None
         for token in tokens:
             if token.isdigit():
@@ -16,7 +22,9 @@ class Timer(agents.agent.Agent):
         if amount is None:
             await self.requestMoreInfo("How long do you want to set a timer for?")
         else:
-            # TODO currently assumes seconds, search for time units and convert amount to match
-            print("timer set for " + str(amount))
-            await asyncio.sleep(amount)
-            await self.outputToNona("timer for " + str(amount) + ": beep beep beep")
+            for unit in conversions:
+                if unit in tokens:
+                    time = amount * conversions[unit]
+                    print("timer set for " + str(time))
+                    await asyncio.sleep(time)
+                    await self.outputToNona("timer for " + str(time) + ": beep beep beep")

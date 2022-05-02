@@ -5,8 +5,12 @@ import sounddevice as sd
 import vosk
 import sys
 
+import pyttsx3
+
 import asyncio
 from codes import Codes
+
+DEBUG = True
 
 class Voice:
     def __init__(self, Nona):
@@ -27,6 +31,11 @@ class Voice:
         if status:
             print(status, file=sys.stderr)
         self.q.put(bytes(indata))
+
+    async def NonaSay(self, output):
+        engine = pyttsx3.init()
+        engine.say(output)
+        engine.runAndWait()
 
     async def NonaListener(self):
         # https://github.com/alphacep/vosk-api
@@ -79,7 +88,8 @@ class Voice:
                 data = self.q.get()
                 if rec.AcceptWaveform(data):
                     result = rec.Result()[14:-3]
-                    # print(result)
+                    if DEBUG:
+                        print("you said: " + result)
                     await self.Nona.addToQueue(Codes.INP, result)
                     await asyncio.sleep(0.01)
                 else:
