@@ -7,7 +7,8 @@ import queue
 from word2number import w2n
 
 from codes import Codes
-import voice
+import ear
+import mouth
 
 DEBUG = True
 
@@ -15,7 +16,8 @@ class Nona:
     def __init__(self):
         self.on = True  # flip to False while shutting down
         self.name = "nona"  # summon keyword, overwritten by config in setup
-        self.voice = voice.Voice(self) # gets remade in setup with config name
+        self.ear = ear.Ear(self) # gets remade in setup with config name
+        self.mouth = mouth.Mouth()
         self.loadedmodules = {}
         self.instantiatedclasses = {}
         self.agentkeywords = {}
@@ -24,7 +26,7 @@ class Nona:
         self.setup()
         while self.on:
             loop = asyncio.get_event_loop()
-            asyncio.ensure_future(self.voice.NonaListener())
+            asyncio.ensure_future(self.ear.NonaListener())
             asyncio.ensure_future(self.pullFromQueue())
             loop.run_forever()
 
@@ -32,7 +34,7 @@ class Nona:
         config = configparser.ConfigParser()
         config.read('config.ini')
         self.name = config["name"]["name"]
-        self.voice = voice.Voice(self)
+        self.ear = ear.Ear(self)
         for agent in config["agents"]:
             self.loadedmodules[agent] = import_module(config["agents"][agent], "agents")
             self.instantiatedclasses[agent] = getattr(self.loadedmodules[agent], config["agents"][agent][1:len(config["agents"][agent])])(self)
@@ -59,7 +61,7 @@ class Nona:
                         tosay = pulled[1]
                         if DEBUG:
                             print("saying: " + tosay)
-                        await self.voice.NonaSay(tosay)
+                        await self.mouth.NonaSay(tosay)
                     case Codes.REQ:
                         await self.requestFromUser(pulled[1])
                     case Codes.INP:
