@@ -4,6 +4,8 @@ import asyncio
 # https://promity.com/2020/06/03/testing-asynchronous-code-in-python/
 import pytest
 
+# TODO some of these don't work
+
 @pytest.mark.asyncio
 async def test_keywords():
     NonaObj = Nona.Nona()
@@ -55,18 +57,21 @@ async def test_queue():
     await NonaObj.unloadAgent("timer")
 
 @pytest.mark.asyncio
+async def test_name():
+    NonaObj = Nona.Nona()
+    assert NonaObj.name == "zephyr"
+
 async def test_loadfortesting():
     NonaObj = Nona.Nona()
-    await NonaObj.loadAgent("alarm", ".AlArm")
-    await NonaObj.loadAgent("timer", ".Timer")
+    NonaObj.loadAgent("alarm", ".AlArm")
+    NonaObj.loadAgent("timer", ".Timer")
 
-@pytest.mark.asyncio
 async def test_unloadfortesting():
     NonaObj = Nona.Nona()
-    await NonaObj.unloadAgent("alarm")
-    await NonaObj.unloadAgent("timer")
+    NonaObj.unloadAgent("alarm")
+    NonaObj.unloadAgent("timer")
 
 def test_resetcongiffortesting():
     conf = open("config.ini", "w")
-    conf.write('[agents]\n\n[keywords]\nnonacancel = ["nevermind", "never", "mind", "cancel"]\nalarm = ["set an alarm", "remind me at"]\n')
+    conf.write('[agents]\n\n[keywords]\nnonacancel = ["nevermind", "never", "mind", "cancel"]\nalarm = ["set an alarm", "remind me at"]\n\n[name]\nname = Zephyr')
     conf.close()

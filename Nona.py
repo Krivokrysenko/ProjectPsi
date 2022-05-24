@@ -4,24 +4,37 @@ from importlib import import_module
 import json
 import asyncio
 import queue
+from word2number import w2n
 
-# TODO move this????
-# import enum codes
-from agents.agent import Code
+from codes import Codes
+import ear
+import mouth
+
+DEBUG = True
 
 class Nona:
     def __init__(self):
+        self.on = True  # flip to False while shutting down
+        self.name = "nona"  # summon keyword, overwritten by config in setup
+        self.ear = ear.Ear(self) # gets remade in setup with config name
+        self.mouth = mouth.Mouth()
         self.loadedmodules = {}
         self.instantiatedclasses = {}
         self.agentkeywords = {}
         self.shorttermmemory = {}
-        # queue itself is threadsafe, objects inside are not
-        self.queue = queue.Queue()
+        self.queue = queue.Queue() # queue itself is threadsafe, objects inside are not
         self.setup()
+        while self.on:
+            loop = asyncio.get_event_loop()
+            asyncio.ensure_future(self.ear.NonaListener())
+            asyncio.ensure_future(self.pullFromQueue())
+            loop.run_forever()
 
     def setup(self):
         config = configparser.ConfigParser()
         config.read('config.ini')
+        self.name = config["name"]["name"]
+        self.ear = ear.Ear(self)
         for agent in config["agents"]:
             self.loadedmodules[agent] = import_module(config["agents"][agent], "agents")
             self.instantiatedclasses[agent] = getattr(self.loadedmodules[agent], config["agents"][agent][1:len(config["agents"][agent])])(self)
@@ -35,12 +48,40 @@ class Nona:
             "currentAgent": None
         }
 
-    # async def listen(self):
-    # TODO concurrent listening that adds voice input to queue
+    async def addToQueue(self, code, outreq):
+        if code != Codes.INP or self.name.lower() in outreq.lower():
+            self.queue.put([code, outreq])
 
-    # TODO this should pull inputs from queue
+    async def pullFromQueue(self):
+        while self.on:
+            pulled = None if self.queue.empty() else self.queue.get()
+            if pulled is not None:
+                match pulled[0]:
+                    case Codes.OUT:
+                        tosay = pulled[1]
+                        if DEBUG:
+                            print("saying: " + tosay)
+                        await self.mouth.NonaSay(tosay)
+                    case Codes.REQ:
+                        await self.requestFromUser(pulled[1])
+                    case Codes.INP:
+                        # TODO use config off keywords or somethin
+                        if "shut down" in pulled[1].lower():
+                            self.on = False
+                        else:
+                            await self.acceptInput(pulled[1])
+                self.queue.task_done()
+            await asyncio.sleep(0.01)
+
     async def acceptInput(self, userstring):
-        tokens = userstring.split(" ")
+        tokens = []
+        for word in userstring.split(" "):
+            try:
+                attempt = w2n.word_to_num(word)
+            except:
+                tokens.append(word.lower())
+            else:
+                tokens.append(str(attempt))
         await self.summonAgent(tokens)
 
     async def summonAgent(self, tokens):
@@ -53,6 +94,7 @@ class Nona:
                     asyncio.create_task(self.shorttermmemory["currentAgent"].interpret(tokens))
 
     async def requestFromUser(self, request):
+        # TODO this needs to be completely redone to work with voice input
         print(request)
         answer = input()
         tokens = answer.split(" ")
@@ -60,20 +102,6 @@ class Nona:
             print("Okay!")
         else:
             asyncio.create_task(self.shorttermmemory["currentAgent"].interpret(tokens))
-
-    async def addToQueue(self, code, outreq):
-        self.queue.put([code, outreq])
-
-    async def pullFromQueue(self):
-        # TODO IN stuff
-        pulled = None if self.queue.empty() else self.queue.get()
-        if pulled is not None:
-            match pulled[0]:
-                case Code.OUT:
-                    print(pulled[1])
-                case Code.REQ:
-                    await self.requestFromUser(pulled[1])
-            self.queue.task_done()
 
     async def addKeyword(self, agentName, keyword):
         self.agentkeywords[agentName] = self.agentkeywords[agentName] + [keyword]
@@ -86,7 +114,9 @@ class Nona:
         with open('config.ini', 'w') as configfile:
             config.write(configfile)
 
-    async def loadAgent(self, agentName, filename):
+    # these only work when not async which might be an issue down the line
+
+    def loadAgent(self, agentName, filename):
         config = configparser.ConfigParser()
         config.read('config.ini')
         config["agents"][agentName] = filename
@@ -100,7 +130,7 @@ class Nona:
         self.instantiatedclasses[agentName] = obj
         self.agentkeywords[agentName] = tempKeywords
 
-    async def unloadAgent(self, agentName):
+    def unloadAgent(self, agentName):
         config = configparser.ConfigParser()
         config.read('config.ini')
         config.remove_option("agents", agentName)
@@ -112,3 +142,6 @@ class Nona:
             self.instantiatedclasses.pop(agentName)
         if agentName in self.agentkeywords:
             self.agentkeywords.pop(agentName)
+
+if __name__ == "__main__":
+    Nona = Nona()
